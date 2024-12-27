@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "DroidPokedex"
 include(":app")
+include(":network")
