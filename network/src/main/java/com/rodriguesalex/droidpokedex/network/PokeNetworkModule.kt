@@ -26,7 +26,7 @@ object PokeNetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit = Retrofit.Builder()
-        .baseUrl("")
+        .baseUrl("https://pokeapi.co/api/v2/")
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
