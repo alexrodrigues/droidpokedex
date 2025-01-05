@@ -1,6 +1,6 @@
-package com.rodriguesalex.droidpokedex.network.services
+package com.rodriguesalex.data.service
 
-import com.rodriguesalex.droidpokedex.network.data.PokemonListResponse
+import com.rodriguesalex.domain.model.PokemonListResponse
 import retrofit2.http.GET
 
 interface PokeHomeService {

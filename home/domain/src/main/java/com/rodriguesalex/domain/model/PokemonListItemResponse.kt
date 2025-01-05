@@ -1,4 +1,4 @@
-package com.rodriguesalex.droidpokedex.network.data
+package com.rodriguesalex.domain.model
 
 data class PokemonListItemResponse (
     val name: String,
