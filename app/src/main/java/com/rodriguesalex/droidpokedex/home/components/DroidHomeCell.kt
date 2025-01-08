@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.rodriguesalex.droidpokedex.designsystem.spacing
 
 @Composable
 fun DroidHomeCell(
@@ -28,13 +29,14 @@ fun DroidHomeCell(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(spacing.small.dp),
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .background(backgroundColor)
+                .padding(spacing.medium.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             // Pokemon Image
             Image(
@@ -46,7 +48,7 @@ fun DroidHomeCell(
                     .background(Color.White)
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(spacing.medium.dp))
 
             // Pokemon Details
             Column(
@@ -64,15 +66,17 @@ fun DroidHomeCell(
                 types.forEach { type ->
                     Box(
                         modifier = Modifier
-                            .padding(vertical = 2.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .padding(vertical = spacing.xxsmall.dp)
+                            .clip(RoundedCornerShape(spacing.small.dp))
                             .background(Color.White.copy(alpha = 0.3f))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .padding(horizontal = spacing.small.dp, vertical = spacing.xsmall.dp)
+                            .fillMaxWidth()
                     ) {
                         Text(
                             text = type,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White
+                            color = Color.White,
+                            modifier = Modifier.align(Alignment.Center)
                         )
                     }
                 }
