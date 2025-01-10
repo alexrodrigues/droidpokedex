@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.rodriguesalex.droidpokedex.designsystem.spacing
+import com.rodriguesalex.droidpokedex.designsystem.tokens.spacing
 
 @Composable
 fun DroidHomeCell(
@@ -34,6 +34,7 @@ fun DroidHomeCell(
     ) {
         Row(
             modifier = Modifier
+                .height(150.0.dp)
                 .background(backgroundColor)
                 .padding(spacing.medium.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -57,7 +58,7 @@ fun DroidHomeCell(
             ) {
                 Text(
                     text = "#$pokemonNumber - ${pokemonName.uppercase()}",
-                    style = MaterialTheme.typography.headlineLarge,
+                    style = MaterialTheme.typography.headlineMedium,
                     color = Color.White
                 )
                 Spacer(modifier = Modifier.height(8.dp))

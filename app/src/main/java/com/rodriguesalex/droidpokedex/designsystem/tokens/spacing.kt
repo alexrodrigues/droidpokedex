@@ -1,4 +1,4 @@
-package com.rodriguesalex.droidpokedex.designsystem
+package com.rodriguesalex.droidpokedex.designsystem.tokens
 
 object spacing {
     const val xxsmall = 2
