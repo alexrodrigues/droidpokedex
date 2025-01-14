@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
+    testImplementation(libs.testng)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
@@ -50,6 +51,11 @@ dependencies {
 
     implementation(libs.retrofit.lib)
     implementation(libs.retrofit.converter.gson)
+
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+
+    androidTestImplementation(libs.mockk.android)
 }
 
 kapt {

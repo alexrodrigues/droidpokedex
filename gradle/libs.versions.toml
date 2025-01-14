@@ -13,6 +13,9 @@ runtimeLivedata = "1.7.6"
 appcompat = "1.7.0"
 material = "1.12.0"
 storage = "1.5.0"
+mockk = "1.13.5"
+coroutines-test = "1.7.3"
+testng = "6.9.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +44,10 @@ retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version = "4.11.0" }
 androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version = "2.2.2" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines-test" }
+testng = { group = "org.testng", name = "testng", version.ref = "testng" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
