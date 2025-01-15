@@ -21,6 +21,9 @@ class DroidHomeViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+
     private var currentPage = 0
     private val pageSize = 20
 
@@ -45,6 +48,21 @@ class DroidHomeViewModel @Inject constructor(
             }
             _isLoading.value = false
         }
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        _searchQuery.value = query
+        filterPokemons()
+    }
+
+    private fun filterPokemons() {
+//        val currentState = _homeStateFlow.value
+//        if (currentState is DroidHomeViewState.Success) {
+//            val filteredPokemons = currentState.allPokemons.filter {
+//                it.name.contains(_searchQuery.value, ignoreCase = true)
+//            }
+//            _homeStateFlow.value = currentState.copy(pokemons = filteredPokemons)
+//        }
     }
 }
 
