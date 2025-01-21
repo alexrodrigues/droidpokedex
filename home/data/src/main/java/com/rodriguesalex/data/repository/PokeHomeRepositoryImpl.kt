@@ -1,6 +1,7 @@
 package com.rodriguesalex.data.repository
 
 import com.rodriguesalex.data.service.PokeHomeService
+import com.rodriguesalex.domain.model.PokemonListDetailedItemResponse
 import com.rodriguesalex.domain.model.PokemonListResponse
 import com.rodriguesalex.domain.repository.PokeHomeRepository
 import javax.inject.Inject
@@ -26,5 +27,9 @@ class PokeHomeRepositoryImpl @Inject constructor(
         return pokemonListResponse.apply {
             this.detailedResults = detailedResults
         }
+    }
+
+    override suspend fun searchPokemon(name: String): PokemonListDetailedItemResponse {
+        return pokeHomeService.searchPokemon(name)
     }
 }

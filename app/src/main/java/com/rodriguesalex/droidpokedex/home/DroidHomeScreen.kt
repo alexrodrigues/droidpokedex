@@ -96,7 +96,9 @@ internal fun DroidHomeScreen(
                                 backgroundColor = pokemon.backgroundColor
                             )
 
-                            if (index >= pokemons.size - 3 && !isLoading) {
+                            val isSearching = (homePageState as DroidHomeViewState.Success).isSearching
+
+                            if (index >= pokemons.size - 3 && !isLoading && !isSearching) {
                                 viewModel.loadMorePokemons()
                             }
                         }

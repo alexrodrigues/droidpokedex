@@ -3,6 +3,7 @@ package com.rodriguesalex.data.service
 import com.rodriguesalex.domain.model.PokemonListDetailedItemResponse
 import com.rodriguesalex.domain.model.PokemonListResponse
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Url
 
 interface PokeHomeService {
@@ -15,5 +16,10 @@ interface PokeHomeService {
     @GET
     suspend fun fetchHomePokemonDetail(
         @Url url: String
+    ): PokemonListDetailedItemResponse
+
+    @GET("pokemon/{name}")
+    suspend fun searchPokemon(
+        @Path("name") name: String
     ): PokemonListDetailedItemResponse
 }

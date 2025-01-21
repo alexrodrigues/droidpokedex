@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rodriguesalex.domain.model.PokemonListItem
 import com.rodriguesalex.domain.usecase.GetPokeHomeUseCase
+import com.rodriguesalex.domain.usecase.SearchPokemonUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class DroidHomeViewModel @Inject constructor(
-    private val getHomeUseCase: GetPokeHomeUseCase
+    private val getHomeUseCase: GetPokeHomeUseCase,
+    private val searchPokemonUseCase: SearchPokemonUseCase,
 )  : ViewModel() {
 
     private val _homeStateFlow = MutableStateFlow<DroidHomeViewState>(DroidHomeViewState.Loading)
@@ -26,6 +28,8 @@ class DroidHomeViewModel @Inject constructor(
 
     private var currentPage = 0
     private val pageSize = 20
+
+    private var pokemonList = mutableListOf<PokemonListItem>()
 
     init {
         loadMorePokemons()
@@ -41,6 +45,7 @@ class DroidHomeViewModel @Inject constructor(
                     GetPokeHomeUseCase.Params(limit = pageSize, offset = currentPage * pageSize)
                 ).results
             }.onSuccess { newPokemons ->
+                pokemonList.addAll(newPokemons)
                 _homeStateFlow.updateStateWith(newPokemons)
                 currentPage++
             }.onFailure { throwable ->
@@ -52,17 +57,23 @@ class DroidHomeViewModel @Inject constructor(
 
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
-        filterPokemons()
+        _homeStateFlow.value = DroidHomeViewState.Loading
+        filterPokemons(query)
     }
 
-    private fun filterPokemons() {
-//        val currentState = _homeStateFlow.value
-//        if (currentState is DroidHomeViewState.Success) {
-//            val filteredPokemons = currentState.allPokemons.filter {
-//                it.name.contains(_searchQuery.value, ignoreCase = true)
-//            }
-//            _homeStateFlow.value = currentState.copy(pokemons = filteredPokemons)
-//        }
+    private fun filterPokemons(query: String) {
+        viewModelScope.launch {
+            runCatching {
+                searchPokemonUseCase.invoke(SearchPokemonUseCase.Params(query))
+            }.onSuccess { pokemon ->
+                _homeStateFlow.value = DroidHomeViewState.Success(
+                    pokemons = listOf(pokemon),
+                    isSearching = true
+                )
+            }.onFailure { throwable ->
+                _homeStateFlow.value = DroidHomeViewState.Error
+            }
+        }
     }
 }
 

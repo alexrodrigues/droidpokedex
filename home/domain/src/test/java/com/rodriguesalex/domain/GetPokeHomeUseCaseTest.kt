@@ -3,7 +3,6 @@ package com.rodriguesalex.domain
 import com.rodriguesalex.domain.mapper.toModel
 import com.rodriguesalex.domain.model.PokemonList
 import com.rodriguesalex.domain.model.PokemonListItem
-import com.rodriguesalex.domain.model.PokemonListItemResponse
 import com.rodriguesalex.domain.model.PokemonListResponse
 import com.rodriguesalex.domain.repository.PokeHomeRepository
 import com.rodriguesalex.domain.usecase.GetPokeHomeUseCase
