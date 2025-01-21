@@ -57,8 +57,14 @@ class DroidHomeViewModel @Inject constructor(
 
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
-        _homeStateFlow.value = DroidHomeViewState.Loading
-        filterPokemons(query)
+        if (query.isBlank()) {
+            currentPage = 0
+            _homeStateFlow.value = DroidHomeViewState.Loading
+            loadMorePokemons()
+        } else {
+            _homeStateFlow.value = DroidHomeViewState.Loading
+            filterPokemons(query)
+        }
     }
 
     private fun filterPokemons(query: String) {
@@ -80,7 +86,10 @@ class DroidHomeViewModel @Inject constructor(
 private fun MutableStateFlow<DroidHomeViewState>.updateStateWith(newPokemons: List<PokemonListItem>) {
     value = when (val currentState = value) {
         is DroidHomeViewState.Success -> {
-            DroidHomeViewState.Success(currentState.pokemons + newPokemons)
+            DroidHomeViewState.Success(
+                pokemons = currentState.pokemons + newPokemons,
+                isSearching = false
+            )
         }
         else -> DroidHomeViewState.Success(newPokemons)
     }
