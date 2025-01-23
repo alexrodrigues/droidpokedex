@@ -55,7 +55,7 @@ fun DroidHomeCell(
                     modifier = Modifier
                         .size(100.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.2f))
+                        .background(Color.White.copy(alpha = 0.6f))
                 )
 
                 // Foreground Pokémon Image

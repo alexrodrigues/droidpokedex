@@ -1,0 +1,15 @@
+build:
+  maxIssues: 10
+  weights:
+    complexity: 2
+    LongParameterList: 1
+    style: 1
+
+comments:
+  UndocumentedPublicClass:
+    active: false
+
+complexity:
+  LongMethod:
+    active: true
+    threshold: 20
