@@ -29,6 +29,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rodriguesalex.droidpokedex.R
 import com.rodriguesalex.droidpokedex.designsystem.components.DroidPokeHeader
 import com.rodriguesalex.droidpokedex.designsystem.tokens.Colors
 import com.rodriguesalex.droidpokedex.designsystem.tokens.spacing
@@ -93,7 +94,8 @@ internal fun DroidHomeScreen(
                                 pokemonNumber = pokemon.id,
                                 pokemonImageUrl = pokemon.pokemonImageUrl,
                                 types = pokemon.types.map { it.type.name },
-                                backgroundColor = pokemon.backgroundColor
+                                backgroundColor = pokemon.backgroundColor,
+                                pokeballImageRes = R.drawable.pokeball
                             )
 
                             val isSearching = (homePageState as DroidHomeViewState.Success).isSearching

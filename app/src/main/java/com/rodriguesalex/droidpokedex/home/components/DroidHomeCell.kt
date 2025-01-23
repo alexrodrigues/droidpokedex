@@ -13,9 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.rodriguesalex.droidpokedex.R
 import com.rodriguesalex.droidpokedex.designsystem.tokens.spacing
 
 @Composable
@@ -24,7 +26,8 @@ fun DroidHomeCell(
     pokemonNumber: Int,
     pokemonImageUrl: String,
     types: List<String>,
-    backgroundColor: Color
+    backgroundColor: Color,
+    pokeballImageRes: Int,
 ) {
     Card(
         modifier = Modifier
@@ -39,15 +42,31 @@ fun DroidHomeCell(
                 .padding(spacing.medium.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Pokemon Image
-            Image(
-                painter = rememberAsyncImagePainter(model = pokemonImageUrl),
-                contentDescription = "$pokemonName image",
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-                    .background(Color.White)
-            )
+            // Stack images using Box
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(100.dp)
+            ) {
+                // Background Poké Ball Image
+                Image(
+                    painter = rememberAsyncImagePainter(model = pokeballImageRes),
+                    contentDescription = "Poké Ball Background",
+                    colorFilter = ColorFilter.tint(Color.White),
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.2f))
+                )
+
+                // Foreground Pokémon Image
+                Image(
+                    painter = rememberAsyncImagePainter(model = pokemonImageUrl),
+                    contentDescription = "$pokemonName image",
+                    modifier = Modifier
+                        .size(90.dp)
+                        .clip(CircleShape)
+                )
+            }
 
             Spacer(modifier = Modifier.width(spacing.medium.dp))
 
@@ -94,6 +113,7 @@ fun PokemonListScreenPreview() {
         pokemonNumber = 1,
         pokemonImageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
         types = listOf("grass", "poison"),
-        backgroundColor = Color(0xFF63B556)
+        backgroundColor = Color(0xFF63B556),
+        pokeballImageRes = R.drawable.pokeball
     )
 }
