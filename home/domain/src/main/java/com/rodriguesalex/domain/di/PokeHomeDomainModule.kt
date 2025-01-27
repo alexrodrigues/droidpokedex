@@ -14,11 +14,9 @@ import javax.inject.Singleton
 object PokeHomeDomainModule {
     @Provides
     @Singleton
-    fun providesGetPokeHomeUseCase(repository: PokeHomeRepository): GetPokeHomeUseCase =
-        GetPokeHomeUseCase(repository = repository)
+    fun providesGetPokeHomeUseCase(repository: PokeHomeRepository): GetPokeHomeUseCase = GetPokeHomeUseCase(repository = repository)
 
     @Provides
     @Singleton
-    fun providesSearchPokemonUseCase(repository: PokeHomeRepository): SearchPokemonUseCase =
-        SearchPokemonUseCase(repository = repository)
+    fun providesSearchPokemonUseCase(repository: PokeHomeRepository): SearchPokemonUseCase = SearchPokemonUseCase(repository = repository)
 }

@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package com.rodriguesalex.droidpokedex.designsystem.components
 
 import androidx.compose.foundation.background
@@ -8,16 +10,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DroidPokeHeader(
-    modifier: Modifier
-) {
+fun DroidPokeHeader(modifier: Modifier) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(contentAlignment = Alignment.Center) {
             BuildBall(color = Color.White, size = 70.dp)
@@ -33,11 +34,15 @@ fun DroidPokeHeader(
 }
 
 @Composable
-fun BuildBall(color: Color, size: androidx.compose.ui.unit.Dp) {
+fun BuildBall(
+    color: Color,
+    size: Dp,
+) {
     Box(
-        modifier = Modifier
-            .size(size)
-            .shadow(4.dp, shape = CircleShape)
-            .background(color = color, shape = CircleShape)
+        modifier =
+            Modifier
+                .size(size)
+                .shadow(4.dp, shape = CircleShape)
+                .background(color = color, shape = CircleShape),
     )
 }

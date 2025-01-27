@@ -23,7 +23,8 @@ enum class DroidPokemonTypeColor(val primary: Color, val secondary: Color) {
     WATER(Color(0xFF4A90DA), Color(0xFF58ABF6)),
     SHADOW(Color(0xFF5116A4), Color(0xFF855BBF)),
     STELLAR(Color(0xFF00B7A6), Color(0xFF00C5B0)),
-    UNKNOWN(Color(0xFF333D33), Color(0xFF707770));
+    UNKNOWN(Color(0xFF333D33), Color(0xFF707770)),
+    ;
 
     companion object {
         fun getPokemonColor(type: String): DroidPokemonTypeColor {

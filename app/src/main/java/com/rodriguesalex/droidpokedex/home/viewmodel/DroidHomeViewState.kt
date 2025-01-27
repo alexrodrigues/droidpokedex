@@ -4,6 +4,7 @@ import com.rodriguesalex.domain.model.PokemonListItem
 
 sealed class DroidHomeViewState {
     data object Loading : DroidHomeViewState()
+
     data class Success(
         val pokemons: List<PokemonListItem>,
         val isSearching: Boolean = false,

@@ -18,7 +18,6 @@ import org.junit.Before
 import org.junit.Test
 
 class GetPokeHomeUseCaseTest {
-
     @MockK
     private lateinit var repository: PokeHomeRepository
 
@@ -32,34 +31,39 @@ class GetPokeHomeUseCaseTest {
     }
 
     @Test
-    fun `Given our pokedex its open then we should provide pokemons`() = runTest {
-        // Arrange
-        val params = GetPokeHomeUseCase.Params(limit = 10, offset = 0)
-        val pikachu = mockk<PokemonListItem>() {
-            every { name } returns "Pikachu"
+    fun `Given our pokedex its open then we should provide pokemons`() =
+        runTest {
+            // Arrange
+            val params = GetPokeHomeUseCase.Params(limit = 10, offset = 0)
+            val pikachu =
+                mockk<PokemonListItem> {
+                    every { name } returns "Pikachu"
+                }
+
+            val bulbasaur =
+                mockk<PokemonListItem> {
+                    every { name } returns "Bulbasaur"
+                }
+
+            val mockedResponse =
+                mockk<PokemonListResponse> {
+                    coEvery { toModel() } returns
+                        PokemonList(
+                            results = listOf(pikachu, bulbasaur),
+                            count = 10,
+                            next = "https://pokeapi.co/api/v2/pokemon?offset=10&limit=10",
+                            previous = null,
+                        )
+                }
+
+            coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
+
+            // Act
+            val result = getPokeHomeUseCase.invoke(params)
+
+            // Assert
+            assertEquals(2, result.results.size)
+            assertEquals("Pikachu", result.results.first().name)
+            assertEquals("Bulbasaur", result.results[1].name)
         }
-
-        val bulbasaur = mockk<PokemonListItem>() {
-            every { name } returns "Bulbasaur"
-        }
-
-        val mockedResponse = mockk<PokemonListResponse> {
-            coEvery { toModel() } returns PokemonList(
-                results = listOf(pikachu, bulbasaur),
-                count = 10,
-                next = "https://pokeapi.co/api/v2/pokemon?offset=10&limit=10",
-                previous = null
-            )
-        }
-
-        coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
-
-        // Act
-        val result = getPokeHomeUseCase.invoke(params)
-
-        // Assert
-        assertEquals(2, result.results.size)
-        assertEquals("Pikachu", result.results.first().name)
-        assertEquals("Bulbasaur", result.results[1].name)
-    }
 }

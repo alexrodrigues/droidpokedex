@@ -7,21 +7,17 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 import retrofit2.Retrofit
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object PokeHomeDataModule {
     @Provides
     @Singleton
-    fun provideCharacterService(retrofit: Retrofit) =
-        retrofit.create(PokeHomeService::class.java)
+    fun provideCharacterService(retrofit: Retrofit) = retrofit.create(PokeHomeService::class.java)
 
     @Provides
     @Singleton
-    fun providePokeHomeRepository(
-        service: PokeHomeService
-    ): PokeHomeRepository = PokeHomeRepositoryImpl(service)
-
+    fun providePokeHomeRepository(service: PokeHomeService): PokeHomeRepository = PokeHomeRepositoryImpl(service)
 }

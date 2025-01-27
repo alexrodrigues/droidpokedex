@@ -10,16 +10,16 @@ interface PokeHomeService {
     @GET("pokemon")
     suspend fun fetchPokemonList(
         @retrofit2.http.Query("limit") limit: Int,
-        @retrofit2.http.Query("offset") offset: Int
+        @retrofit2.http.Query("offset") offset: Int,
     ): PokemonListResponse
 
     @GET
     suspend fun fetchHomePokemonDetail(
-        @Url url: String
+        @Url url: String,
     ): PokemonListDetailedItemResponse
 
     @GET("pokemon/{name}")
     suspend fun searchPokemon(
-        @Path("name") name: String
+        @Path("name") name: String,
     ): PokemonListDetailedItemResponse
 }

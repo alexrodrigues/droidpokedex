@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package com.rodriguesalex.droidpokedex.home.components
 
 import androidx.compose.foundation.Image
@@ -30,41 +32,45 @@ fun DroidHomeCell(
     pokeballImageRes: Int,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(spacing.small.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(spacing.small.dp),
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(
-            modifier = Modifier
-                .height(150.0.dp)
-                .background(backgroundColor)
-                .padding(spacing.medium.dp),
+            modifier =
+                Modifier
+                    .height(150.dp)
+                    .background(backgroundColor)
+                    .padding(spacing.medium.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Stack images using Box
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(100.dp),
             ) {
                 // Background Poké Ball Image
                 Image(
                     painter = rememberAsyncImagePainter(model = pokeballImageRes),
                     contentDescription = "Poké Ball Background",
                     colorFilter = ColorFilter.tint(Color.White),
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.6f))
+                    modifier =
+                        Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.6f)),
                 )
 
                 // Foreground Pokémon Image
                 Image(
                     painter = rememberAsyncImagePainter(model = pokemonImageUrl),
                     contentDescription = "$pokemonName image",
-                    modifier = Modifier
-                        .size(90.dp)
-                        .clip(CircleShape)
+                    modifier =
+                        Modifier
+                            .size(90.dp)
+                            .clip(CircleShape),
                 )
             }
 
@@ -73,30 +79,31 @@ fun DroidHomeCell(
             // Pokemon Details
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = "#$pokemonNumber - ${pokemonName.uppercase()}",
                     style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White
+                    color = Color.White,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Types
                 types.forEach { type ->
                     Box(
-                        modifier = Modifier
-                            .padding(vertical = spacing.xxsmall.dp)
-                            .clip(RoundedCornerShape(spacing.small.dp))
-                            .background(Color.White.copy(alpha = 0.3f))
-                            .padding(horizontal = spacing.small.dp, vertical = spacing.xsmall.dp)
-                            .fillMaxWidth()
+                        modifier =
+                            Modifier
+                                .padding(vertical = spacing.xxsmall.dp)
+                                .clip(RoundedCornerShape(spacing.small.dp))
+                                .background(Color.White.copy(alpha = 0.3f))
+                                .padding(horizontal = spacing.small.dp, vertical = spacing.xsmall.dp)
+                                .fillMaxWidth(),
                     ) {
                         Text(
                             text = type,
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White,
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier.align(Alignment.Center),
                         )
                     }
                 }
@@ -114,6 +121,6 @@ fun PokemonListScreenPreview() {
         pokemonImageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
         types = listOf("grass", "poison"),
         backgroundColor = Color(0xFF63B556),
-        pokeballImageRes = R.drawable.pokeball
+        pokeballImageRes = R.drawable.pokeball,
     )
 }

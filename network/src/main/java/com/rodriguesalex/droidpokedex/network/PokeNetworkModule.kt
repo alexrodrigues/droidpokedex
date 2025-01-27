@@ -15,7 +15,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object PokeNetworkModule {
-
     @Provides
     @Singleton
     fun provideGson(): Gson = GsonBuilder().create()
@@ -26,10 +25,11 @@ object PokeNetworkModule {
         val builder = OkHttpClient.Builder()
 
 //        if (BuildConfig.DEBUG) {
-            val loggingInterceptor = HttpLoggingInterceptor().apply {
+        val loggingInterceptor =
+            HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             }
-            builder.addInterceptor(loggingInterceptor)
+        builder.addInterceptor(loggingInterceptor)
 //        }
 
         return builder.build()
@@ -37,9 +37,13 @@ object PokeNetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit = Retrofit.Builder()
-        .baseUrl("https://pokeapi.co/api/v2/")
-        .client(okHttpClient)
-        .addConverterFactory(GsonConverterFactory.create(gson))
-        .build()
+    fun provideRetrofit(
+        okHttpClient: OkHttpClient,
+        gson: Gson,
+    ): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("https://pokeapi.co/api/v2/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
 }

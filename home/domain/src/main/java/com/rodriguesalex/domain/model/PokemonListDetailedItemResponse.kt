@@ -17,44 +17,44 @@ data class PokemonListDetailedItemResponse(
     val species: NamedAPIResourceResponse,
     val sprites: SpritesResponse,
     val stats: List<StatSlotResponse>,
-    val types: List<TypeSlotResponse>
+    val types: List<TypeSlotResponse>,
 )
 
 data class AbilitySlotResponse(
     val is_hidden: Boolean,
     val slot: Int,
-    val ability: NamedAPIResourceResponse
+    val ability: NamedAPIResourceResponse,
 )
 
 data class NamedAPIResourceResponse(
     val name: String,
-    val url: String
+    val url: String,
 )
 
 data class GameIndexResponse(
     val game_index: Int,
-    val version: NamedAPIResourceResponse
+    val version: NamedAPIResourceResponse,
 )
 
 data class HeldItemResponse(
     val item: NamedAPIResourceResponse,
-    val version_details: List<HeldItemVersionResponse>
+    val version_details: List<HeldItemVersionResponse>,
 )
 
 data class HeldItemVersionResponse(
     val version: NamedAPIResourceResponse,
-    val rarity: Int
+    val rarity: Int,
 )
 
 data class MoveSlotResponse(
     val move: NamedAPIResourceResponse,
-    val version_group_details: List<MoveVersionResponse>
+    val version_group_details: List<MoveVersionResponse>,
 )
 
 data class MoveVersionResponse(
     val move_learn_method: NamedAPIResourceResponse,
     val version_group: NamedAPIResourceResponse,
-    val level_learned_at: Int
+    val level_learned_at: Int,
 )
 
 data class SpritesResponse(
@@ -65,16 +65,16 @@ data class SpritesResponse(
     val front_default: String?,
     val front_female: String?,
     val front_shiny: String?,
-    val front_shiny_female: String?
+    val front_shiny_female: String?,
 )
 
 data class StatSlotResponse(
     val stat: NamedAPIResourceResponse,
     val effort: Int,
-    val base_stat: Int
+    val base_stat: Int,
 )
 
 data class TypeSlotResponse(
     val slot: Int,
-    val type: NamedAPIResourceResponse
+    val type: NamedAPIResourceResponse,
 )
