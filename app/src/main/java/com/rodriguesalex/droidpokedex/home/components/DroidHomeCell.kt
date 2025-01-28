@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package com.rodriguesalex.droidpokedex.home.components
 
 import androidx.compose.foundation.Image
@@ -21,6 +23,7 @@ import com.rodriguesalex.droidpokedex.R
 import com.rodriguesalex.droidpokedex.designsystem.tokens.Spacing
 
 @Composable
+@Suppress("LongMethod")
 fun DroidHomeCell(
     pokemonName: String,
     pokemonNumber: Int,

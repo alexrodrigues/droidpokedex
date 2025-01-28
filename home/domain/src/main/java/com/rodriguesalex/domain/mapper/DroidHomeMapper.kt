@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package com.rodriguesalex.domain.mapper
 
 import com.rodriguesalex.domain.model.AbilitySlot
@@ -34,6 +36,7 @@ fun PokemonListResponse.toModel(): PokemonList =
         results = detailedResults?.map { it.toModel() }.orEmpty(),
     )
 
+@Suppress("LongMethod")
 fun PokemonListDetailedItemResponse.toModel(): PokemonListItem =
     PokemonListItem(
         id = id,

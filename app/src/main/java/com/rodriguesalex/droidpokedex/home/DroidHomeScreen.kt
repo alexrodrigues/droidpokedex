@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package com.rodriguesalex.droidpokedex.home
 
 import androidx.compose.foundation.background
@@ -37,6 +39,7 @@ import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeViewModel
 import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeViewState
 
 @Composable
+@Suppress("LongMethod")
 internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
     val homePageState by viewModel.homeStateFlow.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -125,6 +128,7 @@ internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
 }
 
 @Composable
+@Suppress("LongMethod")
 fun PokeSearchBar(
     searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
@@ -137,37 +141,46 @@ fun PokeSearchBar(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(Spacing.MEDIUM.dp)
                 .background(
                     color = Color.White,
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(Spacing.MEDIUM.dp),
                 )
-                .shadow(4.dp, shape = RoundedCornerShape(16.dp)),
-        placeholder = {
-            Text(
-                text = "Search Pokémon...",
-                color = Color.Gray,
-            )
-        },
+                .shadow(4.dp, shape = RoundedCornerShape(Spacing.MEDIUM.dp)),
+        placeholder = { SearchPlaceholderText() },
         singleLine = true,
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search Icon",
-                tint = Color.Gray,
-            )
-        },
-        colors =
-            TextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                cursorColor = Color.Red,
-                focusedIndicatorColor = Color.White,
-                unfocusedIndicatorColor = Color.White,
-            ),
+        leadingIcon = { SearchIcon() },
+        colors = searchTextFieldColors(),
         textStyle = TextStyle(fontSize = Spacing.MEDIUM.sp),
     )
 }
+
+@Composable
+private fun SearchPlaceholderText() {
+    Text(
+        text = "Search Pokémon...",
+        color = Color.Gray,
+    )
+}
+
+@Composable
+private fun SearchIcon() {
+    Icon(
+        imageVector = Icons.Default.Search,
+        contentDescription = "Search Icon",
+        tint = Color.Gray,
+    )
+}
+
+@Composable
+private fun searchTextFieldColors() =
+    TextFieldDefaults.colors(
+        focusedContainerColor = Color.White,
+        unfocusedContainerColor = Color.White,
+        cursorColor = Color.Red,
+        focusedIndicatorColor = Color.White,
+        unfocusedIndicatorColor = Color.White,
+    )
 
 @Composable
 fun LoadingIndicator(modifier: Modifier) {

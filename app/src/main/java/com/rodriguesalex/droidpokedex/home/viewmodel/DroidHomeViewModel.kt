@@ -28,7 +28,6 @@ class DroidHomeViewModel
         val searchQuery: StateFlow<String> = _searchQuery
 
         private var currentPage = 0
-        private val pageSize = 20
 
         private var pokemonList = mutableListOf<PokemonListItem>()
 
@@ -43,7 +42,7 @@ class DroidHomeViewModel
             viewModelScope.launch {
                 runCatching {
                     getHomeUseCase.invoke(
-                        GetPokeHomeUseCase.Params(limit = pageSize, offset = currentPage * pageSize),
+                        GetPokeHomeUseCase.Params(limit = PAGE_SIZE, offset = currentPage * PAGE_SIZE),
                     ).results
                 }.onSuccess { newPokemons ->
                     pokemonList.addAll(newPokemons)
@@ -82,6 +81,10 @@ class DroidHomeViewModel
                     _homeStateFlow.value = DroidHomeViewState.Error
                 }
             }
+        }
+
+        companion object {
+            private const val PAGE_SIZE = 20
         }
     }
 
