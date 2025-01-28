@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:SuppressWarnings("FunctionNaming")
 
 package com.rodriguesalex.droidpokedex.designsystem.components
 
@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
+@Suppress("FunctionNaming")
 fun DroidPokeHeader(modifier: Modifier) {
     Row(
         modifier = modifier.fillMaxWidth(),

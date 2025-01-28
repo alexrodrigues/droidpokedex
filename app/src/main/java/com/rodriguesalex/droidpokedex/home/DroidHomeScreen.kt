@@ -31,7 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rodriguesalex.droidpokedex.R
 import com.rodriguesalex.droidpokedex.designsystem.components.DroidPokeHeader
 import com.rodriguesalex.droidpokedex.designsystem.tokens.Colors
-import com.rodriguesalex.droidpokedex.designsystem.tokens.spacing
+import com.rodriguesalex.droidpokedex.designsystem.tokens.Spacing
 import com.rodriguesalex.droidpokedex.home.components.DroidHomeCell
 import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeViewModel
 import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeViewState
@@ -54,7 +54,7 @@ internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
                     .padding(innerPadding),
         ) {
             DroidPokeHeader(
-                modifier = Modifier.padding(spacing.medium.dp),
+                modifier = Modifier.padding(Spacing.MEDIUM.dp),
             )
 
             PokeSearchBar(
@@ -108,7 +108,7 @@ internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
                                     modifier =
                                         Modifier
                                             .fillMaxWidth()
-                                            .padding(vertical = spacing.medium.dp),
+                                            .padding(vertical = Spacing.MEDIUM.dp),
                                 ) {
                                     CircularProgressIndicator(
                                         color = Color.White,
@@ -165,7 +165,7 @@ fun PokeSearchBar(
                 focusedIndicatorColor = Color.White,
                 unfocusedIndicatorColor = Color.White,
             ),
-        textStyle = TextStyle(fontSize = spacing.medium.sp),
+        textStyle = TextStyle(fontSize = Spacing.MEDIUM.sp),
     )
 }
 
@@ -175,7 +175,7 @@ fun LoadingIndicator(modifier: Modifier) {
         modifier =
             Modifier
                 .fillMaxSize()
-                .padding(spacing.medium.dp),
+                .padding(Spacing.MEDIUM.dp),
     ) {
         CircularProgressIndicator(
             color = Color.White,

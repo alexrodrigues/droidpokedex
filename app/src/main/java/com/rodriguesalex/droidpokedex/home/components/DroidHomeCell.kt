@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package com.rodriguesalex.droidpokedex.home.components
 
 import androidx.compose.foundation.Image
@@ -20,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.rodriguesalex.droidpokedex.R
-import com.rodriguesalex.droidpokedex.designsystem.tokens.spacing
+import com.rodriguesalex.droidpokedex.designsystem.tokens.Spacing
 
 @Composable
 fun DroidHomeCell(
@@ -35,7 +33,7 @@ fun DroidHomeCell(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(spacing.small.dp),
+                .padding(Spacing.SMALL.dp),
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(
@@ -43,7 +41,7 @@ fun DroidHomeCell(
                 Modifier
                     .height(150.dp)
                     .background(backgroundColor)
-                    .padding(spacing.medium.dp),
+                    .padding(Spacing.MEDIUM.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Stack images using Box
@@ -74,7 +72,7 @@ fun DroidHomeCell(
                 )
             }
 
-            Spacer(modifier = Modifier.width(spacing.medium.dp))
+            Spacer(modifier = Modifier.width(Spacing.MEDIUM.dp))
 
             // Pokemon Details
             Column(
@@ -93,10 +91,10 @@ fun DroidHomeCell(
                     Box(
                         modifier =
                             Modifier
-                                .padding(vertical = spacing.xxsmall.dp)
-                                .clip(RoundedCornerShape(spacing.small.dp))
+                                .padding(vertical = Spacing.XXSMALL.dp)
+                                .clip(RoundedCornerShape(Spacing.SMALL.dp))
                                 .background(Color.White.copy(alpha = 0.3f))
-                                .padding(horizontal = spacing.small.dp, vertical = spacing.xsmall.dp)
+                                .padding(horizontal = Spacing.SMALL.dp, vertical = Spacing.XSMALL.dp)
                                 .fillMaxWidth(),
                     ) {
                         Text(

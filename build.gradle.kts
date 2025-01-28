@@ -27,14 +27,6 @@ subprojects {
             outputToConsole.set(true)
             ignoreFailures.set(false)
             enableExperimentalRules.set(true)
-            disabledRules.set(
-                setOf(
-                    "no-wildcard-imports",
-                    "import-ordering",
-                    "function-naming",
-                    "constant-naming",
-                    )
-            )
         }
     }
 }
