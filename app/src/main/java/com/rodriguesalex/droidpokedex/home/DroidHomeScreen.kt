@@ -39,7 +39,7 @@ import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeViewModel
 import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeViewState
 
 @Composable
-@Suppress("LongMethod")
+@Suppress("LongMethod", "MagicNumber")
 internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
     val homePageState by viewModel.homeStateFlow.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()

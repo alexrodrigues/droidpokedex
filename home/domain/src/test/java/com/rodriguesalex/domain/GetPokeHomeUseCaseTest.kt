@@ -30,6 +30,7 @@ class GetPokeHomeUseCaseTest {
         getPokeHomeUseCase = GetPokeHomeUseCase(repository)
     }
 
+    @Suppress("LongMethod")
     @Test
     fun `Given our pokedex its open then we should provide pokemons`() =
         runTest {

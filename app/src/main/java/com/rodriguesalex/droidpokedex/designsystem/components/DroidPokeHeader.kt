@@ -1,4 +1,4 @@
-@file:SuppressWarnings("FunctionNaming")
+@file:SuppressWarnings("FunctionNaming", "MagicNumber")
 
 package com.rodriguesalex.droidpokedex.designsystem.components
 

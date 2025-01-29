@@ -1,3 +1,5 @@
+@file:Suppress("ConstructorParameterNaming")
+
 package com.rodriguesalex.domain.model
 
 data class PokemonListDetailedItemResponse(
