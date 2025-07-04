@@ -1,6 +1,6 @@
 @file:Suppress("FunctionNaming", "MagicNumber")
 
-package com.rodriguesalex.droidpokedex.home.components
+package com.rodriguesalex.droidpokedex.designsystem.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -47,12 +47,10 @@ fun DroidHomeCell(
                     .padding(Spacing.MEDIUM.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Stack images using Box
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.size(100.dp),
             ) {
-                // Background Poké Ball Image
                 Image(
                     painter = rememberAsyncImagePainter(model = pokeballImageRes),
                     contentDescription = "Poké Ball Background",
@@ -64,7 +62,6 @@ fun DroidHomeCell(
                             .background(Color.White.copy(alpha = 0.6f)),
                 )
 
-                // Foreground Pokémon Image
                 Image(
                     painter = rememberAsyncImagePainter(model = pokemonImageUrl),
                     contentDescription = "$pokemonName image",
@@ -77,7 +74,6 @@ fun DroidHomeCell(
 
             Spacer(modifier = Modifier.width(Spacing.MEDIUM.dp))
 
-            // Pokemon Details
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center,
@@ -89,7 +85,6 @@ fun DroidHomeCell(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Types
                 types.forEach { type ->
                     Box(
                         modifier =

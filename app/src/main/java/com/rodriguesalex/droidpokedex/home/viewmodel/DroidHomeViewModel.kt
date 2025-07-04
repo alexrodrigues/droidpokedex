@@ -18,7 +18,7 @@ class DroidHomeViewModel
         private val getHomeUseCase: GetPokeHomeUseCase,
         private val searchPokemonUseCase: SearchPokemonUseCase,
     ) : ViewModel() {
-        private val _homeStateFlow = MutableStateFlow<DroidHomeViewState>(DroidHomeViewState.Loading)
+        private val _homeStateFlow = MutableStateFlow<DroidHomeUiState>(DroidHomeUiState.Loading)
         val homeStateFlow = _homeStateFlow
 
         private val _isLoading = MutableStateFlow(false)
@@ -49,7 +49,7 @@ class DroidHomeViewModel
                     _homeStateFlow.updateStateWith(newPokemons)
                     currentPage++
                 }.onFailure { throwable ->
-                    _homeStateFlow.value = DroidHomeViewState.Error
+                    _homeStateFlow.value = DroidHomeUiState.Error
                 }
                 _isLoading.value = false
             }
@@ -59,10 +59,10 @@ class DroidHomeViewModel
             _searchQuery.value = query
             if (query.isBlank()) {
                 currentPage = 0
-                _homeStateFlow.value = DroidHomeViewState.Loading
+                _homeStateFlow.value = DroidHomeUiState.Loading
                 loadMorePokemons()
             } else {
-                _homeStateFlow.value = DroidHomeViewState.Loading
+                _homeStateFlow.value = DroidHomeUiState.Loading
                 filterPokemons(query)
             }
         }
@@ -73,12 +73,12 @@ class DroidHomeViewModel
                     searchPokemonUseCase.invoke(SearchPokemonUseCase.Params(query))
                 }.onSuccess { pokemon ->
                     _homeStateFlow.value =
-                        DroidHomeViewState.Success(
+                        DroidHomeUiState.Success(
                             pokemons = listOf(pokemon),
                             isSearching = true,
                         )
                 }.onFailure { throwable ->
-                    _homeStateFlow.value = DroidHomeViewState.Error
+                    _homeStateFlow.value = DroidHomeUiState.Error
                 }
             }
         }
@@ -88,15 +88,15 @@ class DroidHomeViewModel
         }
     }
 
-private fun MutableStateFlow<DroidHomeViewState>.updateStateWith(newPokemons: List<PokemonListItem>) {
+private fun MutableStateFlow<DroidHomeUiState>.updateStateWith(newPokemons: List<PokemonListItem>) {
     value =
         when (val currentState = value) {
-            is DroidHomeViewState.Success -> {
-                DroidHomeViewState.Success(
+            is DroidHomeUiState.Success -> {
+                DroidHomeUiState.Success(
                     pokemons = currentState.pokemons + newPokemons,
                     isSearching = false,
                 )
             }
-            else -> DroidHomeViewState.Success(newPokemons)
+            else -> DroidHomeUiState.Success(newPokemons)
         }
 }

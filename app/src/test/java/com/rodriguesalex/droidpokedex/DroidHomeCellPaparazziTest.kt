@@ -3,8 +3,7 @@ package com.rodriguesalex.droidpokedex
 import androidx.compose.ui.graphics.Color
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
-import com.rodriguesalex.droidpokedex.R
-import com.rodriguesalex.droidpokedex.home.components.DroidHomeCell
+import com.rodriguesalex.droidpokedex.designsystem.components.DroidHomeCell
 import org.junit.Rule
 import org.junit.Test
 

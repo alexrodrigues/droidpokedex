@@ -2,13 +2,13 @@ package com.rodriguesalex.droidpokedex.home.viewmodel
 
 import com.rodriguesalex.domain.model.PokemonListItem
 
-sealed class DroidHomeViewState {
-    data object Loading : DroidHomeViewState()
+sealed class DroidHomeUiState {
+    object Loading : DroidHomeUiState()
 
     data class Success(
         val pokemons: List<PokemonListItem>,
         val isSearching: Boolean = false,
-    ) : DroidHomeViewState()
+    ) : DroidHomeUiState()
 
-    data object Error : DroidHomeViewState()
+    object Error : DroidHomeUiState()
 }

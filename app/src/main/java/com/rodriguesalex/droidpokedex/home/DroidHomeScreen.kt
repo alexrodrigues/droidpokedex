@@ -26,17 +26,20 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rodriguesalex.droidpokedex.R
+import com.rodriguesalex.droidpokedex.designsystem.components.DroidErrorComponent
 import com.rodriguesalex.droidpokedex.designsystem.components.DroidPokeHeader
+import com.rodriguesalex.droidpokedex.designsystem.components.DroidPaginationLoadingIndicator
 import com.rodriguesalex.droidpokedex.designsystem.tokens.Colors
 import com.rodriguesalex.droidpokedex.designsystem.tokens.Spacing
-import com.rodriguesalex.droidpokedex.home.components.DroidHomeCell
+import com.rodriguesalex.droidpokedex.designsystem.components.DroidHomeCell
 import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeViewModel
-import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeViewState
+import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeUiState
 
 @Composable
 @Suppress("LongMethod", "MagicNumber")
@@ -66,25 +69,27 @@ internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
             )
 
             when (homePageState) {
-                is DroidHomeViewState.Error -> {
-                    // TODO: Implement error state
+                is DroidHomeUiState.Error -> {
+                    DroidErrorComponent(
+                        message = stringResource(id = R.string.error_message)
+                    )
                 }
 
-                is DroidHomeViewState.Loading -> {
+                is DroidHomeUiState.Loading -> {
                     Box(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight(),
                     ) {
-                        LoadingIndicator(
+                        DroidPaginationLoadingIndicator(
                             modifier = Modifier.align(Center),
                         )
                     }
                 }
 
-                is DroidHomeViewState.Success -> {
-                    val pokemons = (homePageState as DroidHomeViewState.Success).pokemons
+                is DroidHomeUiState.Success -> {
+                    val pokemons = (homePageState as DroidHomeUiState.Success).pokemons
 
                     LazyColumn {
                         items(pokemons.size) { index ->
@@ -98,7 +103,7 @@ internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
                                 pokeballImageRes = R.drawable.pokeball,
                             )
 
-                            val isSearching = (homePageState as DroidHomeViewState.Success).isSearching
+                            val isSearching = (homePageState as DroidHomeUiState.Success).isSearching
 
                             if (index >= pokemons.size - 3 && !isLoading && !isSearching) {
                                 viewModel.loadMorePokemons()
@@ -182,17 +187,3 @@ private fun searchTextFieldColors() =
         unfocusedIndicatorColor = Color.White,
     )
 
-@Composable
-fun LoadingIndicator(modifier: Modifier) {
-    Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(Spacing.MEDIUM.dp),
-    ) {
-        CircularProgressIndicator(
-            color = Color.White,
-            modifier = modifier,
-        )
-    }
-}

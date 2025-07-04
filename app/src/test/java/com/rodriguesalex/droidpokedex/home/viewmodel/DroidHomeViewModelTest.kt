@@ -79,8 +79,8 @@ class DroidHomeViewModelTest {
 
         // Assert
         val currentState = viewModel.homeStateFlow.value
-        assertTrue(currentState is DroidHomeViewState.Success)
-        val successState = currentState as DroidHomeViewState.Success
+        assertTrue(currentState is DroidHomeUiState.Success)
+        val successState = currentState as DroidHomeUiState.Success
         assertEquals(3, successState.pokemons.size)
         assertEquals("Pikachu", successState.pokemons[0].name)
         assertEquals("Bulbasaur", successState.pokemons[1].name)
@@ -124,8 +124,8 @@ class DroidHomeViewModelTest {
 
         // Assert
         val currentState = viewModel.homeStateFlow.value
-        assertTrue(currentState is DroidHomeViewState.Success)
-        val successState = currentState as DroidHomeViewState.Success
+        assertTrue(currentState is DroidHomeUiState.Success)
+        val successState = currentState as DroidHomeUiState.Success
         assertEquals(5, successState.pokemons.size)
         assertEquals("Pikachu", successState.pokemons[0].name)
         assertEquals("Squirtle", successState.pokemons[3].name)
@@ -145,7 +145,7 @@ class DroidHomeViewModelTest {
 
         // Assert
         val currentState = viewModel.homeStateFlow.value
-        assertTrue(currentState is DroidHomeViewState.Error)
+        assertTrue(currentState is DroidHomeUiState.Error)
     }
 
     @Test
@@ -177,8 +177,8 @@ class DroidHomeViewModelTest {
         // Assert
         assertEquals("", viewModel.searchQuery.value)
         val currentState = viewModel.homeStateFlow.value
-        assertTrue(currentState is DroidHomeViewState.Success)
-        val successState = currentState as DroidHomeViewState.Success
+        assertTrue(currentState is DroidHomeUiState.Success)
+        val successState = currentState as DroidHomeUiState.Success
         assertEquals(3, successState.pokemons.size)
         assertFalse(successState.isSearching)
     }
@@ -215,8 +215,8 @@ class DroidHomeViewModelTest {
         // Assert
         assertEquals(searchQuery, viewModel.searchQuery.value)
         val currentState = viewModel.homeStateFlow.value
-        assertTrue(currentState is DroidHomeViewState.Success)
-        val successState = currentState as DroidHomeViewState.Success
+        assertTrue(currentState is DroidHomeUiState.Success)
+        val successState = currentState as DroidHomeUiState.Success
         assertEquals(1, successState.pokemons.size)
         assertEquals("Pikachu", successState.pokemons[0].name)
         assertTrue(successState.isSearching)
@@ -253,7 +253,7 @@ class DroidHomeViewModelTest {
         // Assert
         assertEquals(searchQuery, viewModel.searchQuery.value)
         val currentState = viewModel.homeStateFlow.value
-        assertTrue(currentState is DroidHomeViewState.Error)
+        assertTrue(currentState is DroidHomeUiState.Error)
     }
 
     @Test
@@ -313,8 +313,8 @@ class DroidHomeViewModelTest {
 
         // Assert - Should only load once
         val currentState = viewModel.homeStateFlow.value
-        assertTrue(currentState is DroidHomeViewState.Success)
-        val successState = currentState as DroidHomeViewState.Success
+        assertTrue(currentState is DroidHomeUiState.Success)
+        val successState = currentState as DroidHomeUiState.Success
         assertEquals(5, successState.pokemons.size) // 3 initial + 2 from second page
     }
 
