@@ -11,14 +11,14 @@ import androidx.compose.ui.unit.dp
 import com.rodriguesalex.droidpokedex.designsystem.tokens.Colors
 
 @Composable
-fun DroidPrimaryButton(
+fun DroidSecondaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
     Button(
         colors = ButtonDefaults.buttonColors(
-            containerColor = Colors.red700,
+            containerColor = Colors.white700,
             contentColor   = Colors.black
         ),
         modifier = modifier,
@@ -39,8 +39,8 @@ fun DroidPrimaryButton(
 
 @Preview
 @Composable
-fun DroidPrimaryButtonPreview(){
-    DroidPrimaryButton(
+fun DroidSecondaryButtonPreview(){
+    DroidSecondaryButton(
         text = "Primary Button",
         onClick = {}
     )

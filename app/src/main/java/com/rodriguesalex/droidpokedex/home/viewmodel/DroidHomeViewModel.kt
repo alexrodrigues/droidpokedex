@@ -83,7 +83,14 @@ class DroidHomeViewModel
             }
         }
 
-        companion object {
+    fun onRetry() {
+        _homeStateFlow.value = DroidHomeUiState.Loading
+        _searchQuery.value = ""
+        currentPage = 0
+        loadMorePokemons()
+    }
+
+    companion object {
             private const val PAGE_SIZE = 20
         }
     }

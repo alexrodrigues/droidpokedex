@@ -71,7 +71,10 @@ internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
             when (homePageState) {
                 is DroidHomeUiState.Error -> {
                     DroidErrorComponent(
-                        message = stringResource(id = R.string.error_message)
+                        message = stringResource(id = R.string.error_message),
+                        onRetryClick = {
+                            viewModel.onRetry()
+                        }
                     )
                 }
 
