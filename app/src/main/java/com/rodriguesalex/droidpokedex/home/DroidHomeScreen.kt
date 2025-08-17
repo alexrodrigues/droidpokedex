@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -40,6 +42,7 @@ import com.rodriguesalex.droidpokedex.designsystem.tokens.Spacing
 import com.rodriguesalex.droidpokedex.designsystem.components.DroidHomeCell
 import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeViewModel
 import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeUiState
+import com.rodriguesalex.droidpokedex.FlutterIntegration
 
 @Composable
 @Suppress("LongMethod", "MagicNumber")
@@ -47,6 +50,7 @@ internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
     val homePageState by viewModel.homeStateFlow.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
+    val context = LocalContext.current
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -62,6 +66,22 @@ internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
             DroidPokeHeader(
                 modifier = Modifier.padding(Spacing.MEDIUM.dp),
             )
+
+            // Flutter Integration Test Button
+            Button(
+                onClick = { 
+                    FlutterIntegration.navigateToFlutter(context, "home")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Spacing.MEDIUM.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = Colors.defaultRed
+                )
+            ) {
+                Text("Test Flutter Integration")
+            }
 
             PokeSearchBar(
                 searchQuery = searchQuery,

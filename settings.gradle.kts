@@ -12,12 +12,19 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         maven("https://jitpack.io")
         google()
         mavenCentral()
+        maven {
+            url = uri("${rootProject.projectDir}/flutter_module/build/host/outputs/repo")
+        }
+        maven {
+            url = uri("https://storage.googleapis.com/download.flutter.io")
+        }
     }
 }
 

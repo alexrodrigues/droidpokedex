@@ -42,11 +42,27 @@ android {
     }
 }
 
+
+
 dependencies {
 
     implementation(project(":network"))
     implementation(project(":home:data"))
     implementation(project(":home:domain"))
+    
+    // Flutter module dependencies (including only necessary native libraries)
+    debugImplementation("com.example.flutter_module:flutter_debug:1.0") {
+        exclude(group = "io.flutter", module = "x86_64_debug")
+        exclude(group = "io.flutter", module = "armeabi_v7a_debug")
+        exclude(group = "io.flutter", module = "x86_debug")
+        // Keep arm64_v8a_debug for your device architecture
+    }
+    releaseImplementation("com.example.flutter_module:flutter_release:1.0") {
+        exclude(group = "io.flutter", module = "x86_64_release")
+        exclude(group = "io.flutter", module = "armeabi_v7a_release")
+        exclude(group = "io.flutter", module = "x86_release")
+        // Keep arm64_v8a_release for your device architecture
+    }
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
