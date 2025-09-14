@@ -43,7 +43,10 @@ import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeUiState
 
 @Composable
 @Suppress("LongMethod", "MagicNumber")
-internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
+internal fun DroidHomeScreen(
+    onPokemonClick: (String) -> Unit = {},
+    viewModel: DroidHomeViewModel = hiltViewModel()
+) {
     val homePageState by viewModel.homeStateFlow.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -104,6 +107,9 @@ internal fun DroidHomeScreen(viewModel: DroidHomeViewModel = hiltViewModel()) {
                                 types = pokemon.types.map { it.type.name },
                                 backgroundColor = pokemon.backgroundColor,
                                 pokeballImageRes = R.drawable.pokeball,
+                                onClick = {
+                                    onPokemonClick(pokemon.id.toString())
+                                }
                             )
 
                             val isSearching = (homePageState as DroidHomeUiState.Success).isSearching

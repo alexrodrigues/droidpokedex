@@ -4,6 +4,7 @@ package com.rodriguesalex.droidpokedex.designsystem.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material.ripple.rememberRipple
 import coil.compose.rememberAsyncImagePainter
 import com.rodriguesalex.droidpokedex.R
 import com.rodriguesalex.droidpokedex.designsystem.tokens.Spacing
@@ -31,12 +34,17 @@ fun DroidHomeCell(
     types: List<String>,
     backgroundColor: Color,
     pokeballImageRes: Int,
+    onClick: () -> Unit = {},
 ) {
     Card(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(Spacing.SMALL.dp),
+                .padding(Spacing.SMALL.dp)
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = rememberRipple()
+                ) { onClick() },
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(

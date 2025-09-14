@@ -6,7 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.rodriguesalex.droidpokedex.home.DroidHomeScreen
+import androidx.navigation.compose.rememberNavController
+import com.rodriguesalex.droidpokedex.navigation.DroidNavigation
 import com.rodriguesalex.droidpokedex.ui.theme.DroidPokedexTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,7 +18,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             DroidPokedexTheme {
-                DroidHomeScreen()
+                val navController = rememberNavController()
+                DroidNavigation(navController = navController)
             }
         }
     }
@@ -27,6 +29,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     DroidPokedexTheme {
-        DroidHomeScreen()
+        val navController = rememberNavController()
+        DroidNavigation(navController = navController)
     }
 }
