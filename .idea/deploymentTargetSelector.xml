@@ -19,9 +19,6 @@
       <SelectionState runConfigName="home.domain">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PreviewLoadingIndicator">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="PokemonListScreenPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -32,6 +29,9 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="DroidSecondaryButtonPreview">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="details">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
