@@ -1,10 +1,7 @@
-package com.rodriguesalex.data.repository
+package com.rodriguesalex.details.data.repository
 
-import com.rodriguesalex.data.service.PokeDetailsService
-import com.rodriguesalex.domain.repository.PokeDetailsRepository
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import com.rodriguesalex.details.data.service.PokeDetailsService
+import com.rodriguesalex.details.domain.repository.PokeDetailsRepository
 import javax.inject.Inject
 
 class PokeDetailsRepositoryImpl

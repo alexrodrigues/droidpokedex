@@ -1,7 +1,7 @@
-package com.rodriguesalex.domain.usecase
+package com.rodriguesalex.details.domain.usecase
 
-import com.rodriguesalex.domain.model.PokemonDetailsResponse
-import com.rodriguesalex.domain.repository.PokeDetailsRepository
+import com.rodriguesalex.details.domain.model.PokemonDetailsResponse
+import com.rodriguesalex.details.domain.repository.PokeDetailsRepository
 import javax.inject.Inject
 
 class GetPokeDetailsUseCase

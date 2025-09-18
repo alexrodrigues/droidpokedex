@@ -1,8 +1,8 @@
-package com.rodriguesalex.data.di
+package com.rodriguesalex.details.data.di
 
-import com.rodriguesalex.data.repository.PokeDetailsRepositoryImpl
-import com.rodriguesalex.data.service.PokeDetailsService
-import com.rodriguesalex.domain.repository.PokeDetailsRepository
+import com.rodriguesalex.details.data.repository.PokeDetailsRepositoryImpl
+import com.rodriguesalex.details.data.service.PokeDetailsService
+import com.rodriguesalex.details.domain.repository.PokeDetailsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

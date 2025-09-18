@@ -1,6 +1,6 @@
-package com.rodriguesalex.data.service
+package com.rodriguesalex.details.data.service
 
-import com.rodriguesalex.domain.model.PokemonDetailsResponse
+import com.rodriguesalex.details.domain.model.PokemonDetailsResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

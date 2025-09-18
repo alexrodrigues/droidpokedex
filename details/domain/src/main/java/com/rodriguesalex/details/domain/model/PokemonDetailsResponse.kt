@@ -1,4 +1,4 @@
-package com.rodriguesalex.domain.model
+package com.rodriguesalex.details.domain.model
 
 data class PokemonDetailsResponse(
     val id: Int,
