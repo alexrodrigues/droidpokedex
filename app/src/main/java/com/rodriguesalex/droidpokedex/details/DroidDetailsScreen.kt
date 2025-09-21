@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rodriguesalex.droidpokedex.details.viewmodel.DroidDetailsUiState
 import com.rodriguesalex.droidpokedex.details.viewmodel.DroidDetailsViewModel
+import com.rodriguesalex.domain.model.DroidPokemonTypeColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,11 +30,20 @@ fun DroidDetailsScreen(
     viewModel: DroidDetailsViewModel = hiltViewModel()
 ) {
     val detailsState by viewModel.detailsStateFlow.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
+
+    val pokemonTypeColor: Color = when (val currentState = detailsState) {
+        is DroidDetailsUiState.Success -> {
+            DroidPokemonTypeColor.getPokemonColor(
+                currentState.pokemonDetails.primaryType ?: "normal"
+            ).primary
+        }
+        else -> DroidPokemonTypeColor.getPokemonColor("normal").primary
+    }
 
     LaunchedEffect(pokemonId) {
         viewModel.loadPokemonDetails(pokemonId)
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -44,7 +54,7 @@ fun DroidDetailsScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF63B556)
+                    containerColor = pokemonTypeColor
                 )
             )
         }
@@ -52,7 +62,7 @@ fun DroidDetailsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF63B556))
+                .background(pokemonTypeColor)
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
@@ -88,17 +98,17 @@ fun DroidDetailsScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "Height: ${currentState.pokemonDetails.height}",
+                            text = "Height: ${currentState.pokemonDetails.heightMeters}",
                             fontSize = 16.sp,
                             color = Color.White
                         )
                         Text(
-                            text = "Weight: ${currentState.pokemonDetails.weight}",
+                            text = "Weight: ${currentState.pokemonDetails.weightKg}",
                             fontSize = 16.sp,
                             color = Color.White
                         )
                         Text(
-                            text = "Base Experience: ${currentState.pokemonDetails.base_experience}",
+                            text = "Base Experience: ${currentState.pokemonDetails.baseExperience}",
                             fontSize = 16.sp,
                             color = Color.White
                         )
@@ -123,7 +133,7 @@ fun DroidDetailsScreen(
                         ) {
                             Text(
                                 text = "Retry",
-                                color = Color(0xFF63B556)
+                                color = pokemonTypeColor
                             )
                         }
                     }
