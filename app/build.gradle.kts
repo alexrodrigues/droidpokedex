@@ -48,6 +48,9 @@ dependencies {
     implementation(project(":home:data"))
     implementation(project(":home:domain"))
 
+    implementation(project(":details:data"))
+    implementation(project(":details:domain"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

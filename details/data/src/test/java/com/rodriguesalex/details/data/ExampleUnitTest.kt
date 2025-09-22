@@ -1,4 +1,4 @@
-package com.rodriguesalex.data
+package com.rodriguesalex.details.data
 
 import org.junit.Test
 
