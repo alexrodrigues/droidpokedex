@@ -142,12 +142,3 @@ fun DroidDetailsScreen(
         }
     }
 }
-
-@Preview
-@Composable
-fun DetailsScreenPreview() {
-    DroidDetailsScreen(
-        pokemonId = "1",
-        onBackClick = {}
-    )
-}
