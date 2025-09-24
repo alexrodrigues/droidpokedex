@@ -2,6 +2,7 @@ package com.rodriguesalex.droidpokedex.details
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
@@ -21,6 +22,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.rodriguesalex.droidpokedex.details.viewmodel.DroidDetailsUiState
 import com.rodriguesalex.droidpokedex.details.viewmodel.DroidDetailsViewModel
 import com.rodriguesalex.domain.model.DroidPokemonTypeColor
+import com.rodriguesalex.droidpokedex.designsystem.components.DroidDetailsHeader
+import com.rodriguesalex.droidpokedex.designsystem.components.DroidDetailsHeaderVo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +50,7 @@ fun DroidDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pokemon #$pokemonId") },
+                title = { Text("") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -82,13 +85,16 @@ fun DroidDetailsScreen(
                 }
                 is DroidDetailsUiState.Success -> {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        verticalArrangement = Arrangement.Top,
+                        modifier = Modifier.fillMaxSize(),
                     ) {
-                        Text(
-                            text = currentState.pokemonDetails.name.replaceFirstChar { char -> char.uppercase() },
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
+                        DroidDetailsHeader(
+                            vo = DroidDetailsHeaderVo(
+                                pokemonName = currentState.pokemonDetails.name.replaceFirstChar { char -> char.uppercase() },
+                                pokemonNumber = currentState.pokemonDetails.id,
+                                backgroundColor = pokemonTypeColor,
+                                pokemonUrl = currentState.pokemonDetails.pokemonImageUrl
+                            ),
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
