@@ -23,3 +23,4 @@ echo "🧪 Running Unit Tests..."
 echo "✅ Unit Tests completed successfully"
 
 echo "🎉 All quality checks passed!"
+

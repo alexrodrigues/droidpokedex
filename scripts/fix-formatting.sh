@@ -21,3 +21,4 @@ echo "✅ Detekt auto-correction completed"
 echo "🎉 Formatting fixes completed!"
 echo ""
 echo "💡 You can now run './scripts/quality-check.sh' to verify all issues are resolved"
+

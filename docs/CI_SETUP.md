@@ -136,3 +136,4 @@ When contributing to this project:
 2. Address any Detekt or Ktlint violations
 3. Add unit tests for new functionality
 4. Update documentation as needed
+

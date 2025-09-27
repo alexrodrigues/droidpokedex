@@ -15,11 +15,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
+       - name: Set up JDK 17
+         uses: actions/setup-java@v4
+         with:
+           java-version: "17"
+           distribution: "temurin"
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -51,11 +51,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
+       - name: Set up JDK 17
+         uses: actions/setup-java@v4
+         with:
+           java-version: "17"
+           distribution: "temurin"
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -94,11 +94,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
+       - name: Set up JDK 17
+         uses: actions/setup-java@v4
+         with:
+           java-version: "17"
+           distribution: "temurin"
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -133,11 +133,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
+       - name: Set up JDK 17
+         uses: actions/setup-java@v4
+         with:
+           java-version: "17"
+           distribution: "temurin"
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -166,11 +166,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
+       - name: Set up JDK 17
+         uses: actions/setup-java@v4
+         with:
+           java-version: "17"
+           distribution: "temurin"
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -196,3 +196,4 @@ jobs:
           path: |
             app/build/reports/lint-results-debug.html
             app/build/reports/lint-results-debug.xml
+
