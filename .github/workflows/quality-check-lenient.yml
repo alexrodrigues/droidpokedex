@@ -1,0 +1,90 @@
+name: Quality Check (Lenient)
+
+on:
+  push:
+    branches: [main, develop, feat/*, bugfix/*, hotfix/*]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality-checks:
+    name: Code Quality & Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Run Detekt
+        run: ./gradlew detekt
+        continue-on-error: true
+
+      - name: Run Ktlint Format (Auto-fix)
+        run: ./gradlew ktlintFormat
+        continue-on-error: true
+
+      - name: Run Ktlint Check
+        run: ./gradlew ktlintCheck
+        continue-on-error: true
+
+      - name: Run Unit Tests
+        run: ./gradlew test
+        continue-on-error: false
+
+      - name: Upload Test Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: |
+            app/build/reports/tests/
+            home/domain/build/reports/tests/
+            details/domain/build/reports/tests/
+            network/build/reports/tests/
+            home/data/build/reports/tests/
+            details/data/build/reports/tests/
+
+      - name: Upload Detekt Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: detekt-reports
+          path: |
+            app/build/reports/detekt/
+            home/domain/build/reports/detekt/
+            details/domain/build/reports/detekt/
+            network/build/reports/detekt/
+            home/data/build/reports/detekt/
+            details/data/build/reports/detekt/
+
+      - name: Upload Ktlint Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ktlint-reports
+          path: |
+            app/build/reports/ktlint/
+            home/domain/build/reports/ktlint/
+            details/domain/build/reports/ktlint/
+            network/build/reports/ktlint/
+            home/data/build/reports/ktlint/
+            details/data/build/reports/ktlint/

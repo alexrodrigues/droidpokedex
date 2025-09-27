@@ -11,23 +11,23 @@ import com.rodriguesalex.droidpokedex.home.DroidHomeScreen
 fun DroidNavigation(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "home",
     ) {
         composable("home") {
             DroidHomeScreen(
                 onPokemonClick = { pokemonId ->
                     navController.navigate("details/$pokemonId")
-                }
+                },
             )
         }
-        
+
         composable("details/{pokemonId}") { backStackEntry ->
             val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: ""
             DroidDetailsScreen(
                 pokemonId = pokemonId,
                 onBackClick = {
                     navController.popBackStack()
-                }
+                },
             )
         }
     }

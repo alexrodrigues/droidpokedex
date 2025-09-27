@@ -9,34 +9,34 @@ data class PokemonDetailsResponse(
     val abilities: List<AbilitySlot>,
     val sprites: Sprites,
     val types: List<TypeSlot>,
-    val stats: List<StatSlot>
+    val stats: List<StatSlot>,
 )
 
 data class AbilitySlot(
     val ability: NamedResource,
     val is_hidden: Boolean,
-    val slot: Int
+    val slot: Int,
 )
 
 data class Sprites(
     val front_default: String?,
     val back_default: String?,
     val front_shiny: String?,
-    val back_shiny: String?
+    val back_shiny: String?,
 )
 
 data class TypeSlot(
     val slot: Int,
-    val type: NamedResource
+    val type: NamedResource,
 )
 
 data class StatSlot(
     val base_stat: Int,
     val effort: Int,
-    val stat: NamedResource
+    val stat: NamedResource,
 )
 
 data class NamedResource(
     val name: String,
-    val url: String
+    val url: String,
 )

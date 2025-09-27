@@ -13,7 +13,6 @@ import javax.inject.Singleton
 object PokeDetailsDomainModule {
     @Provides
     @Singleton
-    fun providesGetPokeDetailsUseCase(
-        repository: PokeDetailsRepository
-    ): GetPokeDetailsUseCase = GetPokeDetailsUseCase(repository = repository)
+    fun providesGetPokeDetailsUseCase(repository: PokeDetailsRepository): GetPokeDetailsUseCase =
+        GetPokeDetailsUseCase(repository = repository)
 }

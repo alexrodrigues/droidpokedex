@@ -15,34 +15,32 @@ class DroidDetailsViewModel
     constructor(
         private val getPokeDetailsUseCase: GetPokeDetailsUseCase,
     ) : ViewModel() {
+        private val _detailsStateFlow = MutableStateFlow<DroidDetailsUiState>(DroidDetailsUiState.Loading)
+        val detailsStateFlow: StateFlow<DroidDetailsUiState> = _detailsStateFlow
 
-    private val _detailsStateFlow = MutableStateFlow<DroidDetailsUiState>(DroidDetailsUiState.Loading)
-    val detailsStateFlow: StateFlow<DroidDetailsUiState> = _detailsStateFlow
-
-    fun loadPokemonDetails(pokemonId: String) {
-
-        val id = pokemonId.toIntOrNull()
-        if (id == null) {
-            _detailsStateFlow.value = DroidDetailsUiState.Error
-            return
-        }
-
-        _detailsStateFlow.value = DroidDetailsUiState.Loading
-
-        viewModelScope.launch {
-            runCatching {
-                getPokeDetailsUseCase.invoke(
-                    GetPokeDetailsUseCase.Params(id = id)
-                )
-            }.onSuccess { pokemonDetails ->
-                _detailsStateFlow.value = DroidDetailsUiState.Success(pokemonDetails)
-            }.onFailure { throwable ->
+        fun loadPokemonDetails(pokemonId: String) {
+            val id = pokemonId.toIntOrNull()
+            if (id == null) {
                 _detailsStateFlow.value = DroidDetailsUiState.Error
+                return
+            }
+
+            _detailsStateFlow.value = DroidDetailsUiState.Loading
+
+            viewModelScope.launch {
+                runCatching {
+                    getPokeDetailsUseCase.invoke(
+                        GetPokeDetailsUseCase.Params(id = id),
+                    )
+                }.onSuccess { pokemonDetails ->
+                    _detailsStateFlow.value = DroidDetailsUiState.Success(pokemonDetails)
+                }.onFailure { throwable ->
+                    _detailsStateFlow.value = DroidDetailsUiState.Error
+                }
             }
         }
-    }
 
-    fun onRetry(pokemonId: String) {
-        loadPokemonDetails(pokemonId)
+        fun onRetry(pokemonId: String) {
+            loadPokemonDetails(pokemonId)
+        }
     }
-}

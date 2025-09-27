@@ -2,7 +2,6 @@ package com.rodriguesalex.droidpokedex.details.viewmodel
 
 import com.rodriguesalex.details.domain.model.PokemonDetails
 
-
 sealed class DroidDetailsUiState {
     object Loading : DroidDetailsUiState()
 

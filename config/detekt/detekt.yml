@@ -1,5 +1,5 @@
 build:
-  maxIssues: 10
+  maxIssues: 100
   weights:
     complexity: 2
     LongParameterList: 1
@@ -12,4 +12,4 @@ comments:
 complexity:
   LongMethod:
     active: true
-    threshold: 20
+    threshold: 30

@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,19 +33,20 @@ import com.rodriguesalex.droidpokedex.designsystem.components.DroidDetailsHeader
 fun DroidDetailsScreen(
     pokemonId: String,
     onBackClick: () -> Unit,
-    viewModel: DroidDetailsViewModel = hiltViewModel()
+    viewModel: DroidDetailsViewModel = hiltViewModel(),
 ) {
     val detailsState by viewModel.detailsStateFlow.collectAsState()
 
-    val pokemonTypeColor: Color = when (val currentState = detailsState) {
-        is DroidDetailsUiState.Success -> {
-            DroidPokemonTypeColor.getPokemonColor(
-                currentState.pokemonDetails.primaryType ?: "normal"
-            ).primary
-        }
+    val pokemonTypeColor: Color =
+        when (val currentState = detailsState) {
+            is DroidDetailsUiState.Success -> {
+                DroidPokemonTypeColor.getPokemonColor(
+                    currentState.pokemonDetails.primaryType ?: "normal",
+                ).primary
+            }
 
-        else -> DroidPokemonTypeColor.getPokemonColor("normal").primary
-    }
+            else -> DroidPokemonTypeColor.getPokemonColor("normal").primary
+        }
 
     LaunchedEffect(pokemonId) {
         viewModel.loadPokemonDetails(pokemonId)
@@ -61,32 +61,36 @@ fun DroidDetailsScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = pokemonTypeColor
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = pokemonTypeColor,
+                    ),
             )
-        }
+        },
     ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(pokemonTypeColor)
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(pokemonTypeColor)
+                    .padding(innerPadding),
+            contentAlignment = Alignment.Center,
         ) {
             when (val currentState = detailsState) {
                 is DroidDetailsUiState.Loading -> PokemonDetailsLoading()
 
-                is DroidDetailsUiState.Success -> PokemonDetailsSuccess(
-                    pokemonDetails = currentState.pokemonDetails,
-                    pokemonTypeColor = pokemonTypeColor
-                )
+                is DroidDetailsUiState.Success ->
+                    PokemonDetailsSuccess(
+                        pokemonDetails = currentState.pokemonDetails,
+                        pokemonTypeColor = pokemonTypeColor,
+                    )
 
-                is DroidDetailsUiState.Error -> PokemonDetailsError(
-                    pokemonTypeColor = pokemonTypeColor
-                ) {
-                    viewModel.onRetry(pokemonId)
-                }
+                is DroidDetailsUiState.Error ->
+                    PokemonDetailsError(
+                        pokemonTypeColor = pokemonTypeColor,
+                    ) {
+                        viewModel.onRetry(pokemonId)
+                    }
             }
         }
     }
@@ -102,42 +106,48 @@ fun PokemonDetailsSuccess(
         modifier = Modifier.fillMaxSize(),
     ) {
         DroidDetailsHeader(
-            vo = DroidDetailsHeaderVo(
-                pokemonName = pokemonDetails.name.replaceFirstChar { char -> char.uppercase() },
-                pokemonNumber = pokemonDetails.id,
-                backgroundColor = pokemonTypeColor,
-                pokemonUrl = pokemonDetails.pokemonImageUrl
-            ),
+            vo =
+                DroidDetailsHeaderVo(
+                    pokemonName = pokemonDetails.name.replaceFirstChar { char -> char.uppercase() },
+                    pokemonNumber = pokemonDetails.id,
+                    backgroundColor = pokemonTypeColor,
+                    pokemonUrl = pokemonDetails.pokemonImageUrl,
+                ),
         )
         Spacer(modifier = Modifier.height(16.dp))
         PokemonDetailSheet(
             pokemonDetails = pokemonDetails,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
         )
     }
 }
 
 @Composable
-fun PokemonDetailSheet(pokemonDetails: PokemonDetails, modifier: Modifier) {
+fun PokemonDetailSheet(
+    pokemonDetails: PokemonDetails,
+    modifier: Modifier,
+) {
     Surface(
         modifier = modifier,
         color = Color.White,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-        tonalElevation = 2.dp
+        tonalElevation = 2.dp,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-                .verticalScroll(rememberScrollState())
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+                    .verticalScroll(rememberScrollState()),
         ) {
             Text(
                 text = "Pokemon #${pokemonDetails.id}",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.Black
+                color = Color.Black,
             )
             Spacer(Modifier.height(12.dp))
             Text("Height: ${pokemonDetails.heightMeters}", color = Color.Black)
@@ -150,14 +160,14 @@ fun PokemonDetailSheet(pokemonDetails: PokemonDetails, modifier: Modifier) {
 @Composable
 fun PokemonDetailsLoading() {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         CircularProgressIndicator(color = Color.White)
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Loading Pokemon details...",
             fontSize = 16.sp,
-            color = Color.White
+            color = Color.White,
         )
     }
 }
@@ -165,29 +175,30 @@ fun PokemonDetailsLoading() {
 @Composable
 fun PokemonDetailsError(
     pokemonTypeColor: Color,
-    retryCallback: () -> Unit
+    retryCallback: () -> Unit,
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = "Error loading Pokemon details",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = Color.White,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
                 retryCallback()
             },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White
-            )
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                ),
         ) {
             Text(
                 text = "Retry",
-                color = pokemonTypeColor
+                color = pokemonTypeColor,
             )
         }
     }
