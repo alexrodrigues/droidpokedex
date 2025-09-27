@@ -8,12 +8,12 @@ import org.junit.Rule
 import org.junit.Test
 
 class DroidHomeCellPaparazziTest {
-
     @get:Rule
-    val paparazzi = Paparazzi(
-        deviceConfig = DeviceConfig.PIXEL_5,
-        theme = "android:Theme.Material.Light.NoActionBar"
-    )
+    val paparazzi =
+        Paparazzi(
+            deviceConfig = DeviceConfig.PIXEL_5,
+            theme = "android:Theme.Material.Light.NoActionBar",
+        )
 
     @Test
     fun `DroidHomeCell with grass type pokemon`() {

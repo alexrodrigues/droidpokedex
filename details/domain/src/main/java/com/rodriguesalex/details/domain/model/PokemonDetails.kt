@@ -9,18 +9,18 @@ data class PokemonDetails(
     val types: List<String>,
     val abilities: List<Ability>,
     val stats: Map<String, Int>,
-    val sprites: Sprites
+    val sprites: Sprites,
 ) {
     data class Ability(
         val name: String,
-        val hidden: Boolean
+        val hidden: Boolean,
     )
 
     data class Sprites(
         val frontDefault: String?,
         val backDefault: String?,
         val frontShiny: String?,
-        val backShiny: String?
+        val backShiny: String?,
     )
 
     val primaryType: String? get() = types.firstOrNull()

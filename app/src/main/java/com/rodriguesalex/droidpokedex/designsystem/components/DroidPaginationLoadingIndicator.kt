@@ -26,7 +26,6 @@ fun DroidPaginationLoadingIndicator(modifier: Modifier) {
     }
 }
 
-
 @Preview
 @Composable
 fun PreviewLoadingIndicator() {

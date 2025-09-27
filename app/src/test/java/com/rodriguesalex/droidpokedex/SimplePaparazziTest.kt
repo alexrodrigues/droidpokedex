@@ -8,10 +8,11 @@ import org.junit.Test
 
 class SimplePaparazziTest {
     @get:Rule
-    val paparazzi = Paparazzi(
-        deviceConfig = DeviceConfig.PIXEL_5,
-        theme = "android:Theme.Material.Light.NoActionBar"
-    )
+    val paparazzi =
+        Paparazzi(
+            deviceConfig = DeviceConfig.PIXEL_5,
+            theme = "android:Theme.Material.Light.NoActionBar",
+        )
 
     @Test
     fun simpleText() {

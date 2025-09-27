@@ -27,18 +27,19 @@ import com.rodriguesalex.domain.model.DroidPokemonTypeColor
 fun DroidDetailsScreen(
     pokemonId: String,
     onBackClick: () -> Unit,
-    viewModel: DroidDetailsViewModel = hiltViewModel()
+    viewModel: DroidDetailsViewModel = hiltViewModel(),
 ) {
     val detailsState by viewModel.detailsStateFlow.collectAsState()
 
-    val pokemonTypeColor: Color = when (val currentState = detailsState) {
-        is DroidDetailsUiState.Success -> {
-            DroidPokemonTypeColor.getPokemonColor(
-                currentState.pokemonDetails.primaryType ?: "normal"
-            ).primary
+    val pokemonTypeColor: Color =
+        when (val currentState = detailsState) {
+            is DroidDetailsUiState.Success -> {
+                DroidPokemonTypeColor.getPokemonColor(
+                    currentState.pokemonDetails.primaryType ?: "normal",
+                ).primary
+            }
+            else -> DroidPokemonTypeColor.getPokemonColor("normal").primary
         }
-        else -> DroidPokemonTypeColor.getPokemonColor("normal").primary
-    }
 
     LaunchedEffect(pokemonId) {
         viewModel.loadPokemonDetails(pokemonId)
@@ -53,87 +54,90 @@ fun DroidDetailsScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = pokemonTypeColor
-                )
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = pokemonTypeColor,
+                    ),
             )
-        }
+        },
     ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(pokemonTypeColor)
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(pokemonTypeColor)
+                    .padding(innerPadding),
+            contentAlignment = Alignment.Center,
         ) {
             when (val currentState = detailsState) {
                 is DroidDetailsUiState.Loading -> {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         CircularProgressIndicator(color = Color.White)
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Loading Pokemon details...",
                             fontSize = 16.sp,
-                            color = Color.White
+                            color = Color.White,
                         )
                     }
                 }
                 is DroidDetailsUiState.Success -> {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
                             text = currentState.pokemonDetails.name.replaceFirstChar { char -> char.uppercase() },
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = Color.White,
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Pokemon #${currentState.pokemonDetails.id}",
                             fontSize = 18.sp,
-                            color = Color.White
+                            color = Color.White,
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "Height: ${currentState.pokemonDetails.heightMeters}",
                             fontSize = 16.sp,
-                            color = Color.White
+                            color = Color.White,
                         )
                         Text(
                             text = "Weight: ${currentState.pokemonDetails.weightKg}",
                             fontSize = 16.sp,
-                            color = Color.White
+                            color = Color.White,
                         )
                         Text(
                             text = "Base Experience: ${currentState.pokemonDetails.baseExperience}",
                             fontSize = 16.sp,
-                            color = Color.White
+                            color = Color.White,
                         )
                     }
                 }
                 is DroidDetailsUiState.Error -> {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
                             text = "Error loading Pokemon details",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = Color.White,
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             onClick = { viewModel.onRetry(pokemonId) },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White
-                            )
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                                ),
                         ) {
                             Text(
                                 text = "Retry",
-                                color = pokemonTypeColor
+                                color = pokemonTypeColor,
                             )
                         }
                     }
@@ -148,6 +152,6 @@ fun DroidDetailsScreen(
 fun DetailsScreenPreview() {
     DroidDetailsScreen(
         pokemonId = "1",
-        onBackClick = {}
+        onBackClick = {},
     )
 }

@@ -69,77 +69,87 @@ class GetPokeHomeUseCaseTest {
         }
 
     @Test
-    fun `Given repository returns empty list then usecase returns empty list`() = runTest {
-        // Arrange
-        val params = GetPokeHomeUseCase.Params(limit = 10, offset = 0)
-        val mockedResponse = mockk<PokemonListResponse> {
-            coEvery { toModel() } returns PokemonList(
-                results = emptyList(),
-                count = 0,
-                next = null,
-                previous = null
-            )
+    fun `Given repository returns empty list then usecase returns empty list`() =
+        runTest {
+            // Arrange
+            val params = GetPokeHomeUseCase.Params(limit = 10, offset = 0)
+            val mockedResponse =
+                mockk<PokemonListResponse> {
+                    coEvery { toModel() } returns
+                        PokemonList(
+                            results = emptyList(),
+                            count = 0,
+                            next = null,
+                            previous = null,
+                        )
+                }
+            coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
+
+            // Act
+            val result = getPokeHomeUseCase.invoke(params)
+
+            // Assert
+            assertEquals(0, result.results.size)
+            assertEquals(0, result.count)
         }
-        coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
-
-        // Act
-        val result = getPokeHomeUseCase.invoke(params)
-
-        // Assert
-        assertEquals(0, result.results.size)
-        assertEquals(0, result.count)
-    }
 
     @Test(expected = RuntimeException::class)
-    fun `Given repository throws exception then usecase throws exception`() = runTest {
-        // Arrange
-        val params = GetPokeHomeUseCase.Params(limit = 10, offset = 0)
-        coEvery { repository.fetchPokemonHome(params.limit, params.offset) } throws RuntimeException("Network error")
+    fun `Given repository throws exception then usecase throws exception`() =
+        runTest {
+            // Arrange
+            val params = GetPokeHomeUseCase.Params(limit = 10, offset = 0)
+            coEvery { repository.fetchPokemonHome(params.limit, params.offset) } throws RuntimeException("Network error")
 
-        // Act
-        getPokeHomeUseCase.invoke(params)
-        // Assert is handled by expected exception
-    }
+            // Act
+            getPokeHomeUseCase.invoke(params)
+            // Assert is handled by expected exception
+        }
 
     @Test
-    fun `Given different params then repository is called with those params`() = runTest {
-        // Arrange
-        val params = GetPokeHomeUseCase.Params(limit = 50, offset = 100)
-        val mockedResponse = mockk<PokemonListResponse> {
-            coEvery { toModel() } returns PokemonList(
-                results = emptyList(),
-                count = 0,
-                next = null,
-                previous = null
-            )
+    fun `Given different params then repository is called with those params`() =
+        runTest {
+            // Arrange
+            val params = GetPokeHomeUseCase.Params(limit = 50, offset = 100)
+            val mockedResponse =
+                mockk<PokemonListResponse> {
+                    coEvery { toModel() } returns
+                        PokemonList(
+                            results = emptyList(),
+                            count = 0,
+                            next = null,
+                            previous = null,
+                        )
+                }
+            coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
+
+            // Act
+            getPokeHomeUseCase.invoke(params)
+
+            // Assert
+            io.mockk.coVerify { repository.fetchPokemonHome(50, 100) }
         }
-        coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
-
-        // Act
-        getPokeHomeUseCase.invoke(params)
-
-        // Assert
-        io.mockk.coVerify { repository.fetchPokemonHome(50, 100) }
-    }
 
     @Test
-    fun `Given mapping logic is correct then toModel is called`() = runTest {
-        // Arrange
-        val params = GetPokeHomeUseCase.Params(limit = 10, offset = 0)
-        val mockedResponse = mockk<PokemonListResponse> {
-            coEvery { toModel() } returns PokemonList(
-                results = emptyList(),
-                count = 0,
-                next = null,
-                previous = null
-            )
+    fun `Given mapping logic is correct then toModel is called`() =
+        runTest {
+            // Arrange
+            val params = GetPokeHomeUseCase.Params(limit = 10, offset = 0)
+            val mockedResponse =
+                mockk<PokemonListResponse> {
+                    coEvery { toModel() } returns
+                        PokemonList(
+                            results = emptyList(),
+                            count = 0,
+                            next = null,
+                            previous = null,
+                        )
+                }
+            coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
+
+            // Act
+            getPokeHomeUseCase.invoke(params)
+
+            // Assert
+            io.mockk.coVerify { mockedResponse.toModel() }
         }
-        coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
-
-        // Act
-        getPokeHomeUseCase.invoke(params)
-
-        // Assert
-        io.mockk.coVerify { mockedResponse.toModel() }
-    }
 }

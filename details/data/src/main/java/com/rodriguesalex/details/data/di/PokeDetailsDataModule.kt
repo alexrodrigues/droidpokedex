@@ -19,6 +19,5 @@ object PokeDetailsDataModule {
 
     @Provides
     @Singleton
-    fun providePokeHomeRepository(service: PokeDetailsService): PokeDetailsRepository =
-        PokeDetailsRepositoryImpl(service)
+    fun providePokeHomeRepository(service: PokeDetailsService): PokeDetailsRepository = PokeDetailsRepositoryImpl(service)
 }
