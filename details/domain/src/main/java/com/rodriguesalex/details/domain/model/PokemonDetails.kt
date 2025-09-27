@@ -4,6 +4,7 @@ data class PokemonDetails(
     val id: Int,
     val name: String,
     val baseExperience: Int,
+    val pokemonImageUrl: String,
     val heightMeters: Double,
     val weightKg: Double,
     val types: List<String>,

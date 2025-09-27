@@ -2,6 +2,10 @@ package com.rodriguesalex.droidpokedex.details
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
@@ -14,13 +18,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rodriguesalex.details.domain.model.PokemonDetails
 import com.rodriguesalex.droidpokedex.details.viewmodel.DroidDetailsUiState
 import com.rodriguesalex.droidpokedex.details.viewmodel.DroidDetailsViewModel
 import com.rodriguesalex.domain.model.DroidPokemonTypeColor
+import com.rodriguesalex.droidpokedex.designsystem.components.DroidDetailsHeader
+import com.rodriguesalex.droidpokedex.designsystem.components.DroidDetailsHeaderVo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +44,7 @@ fun DroidDetailsScreen(
                     currentState.pokemonDetails.primaryType ?: "normal",
                 ).primary
             }
+
             else -> DroidPokemonTypeColor.getPokemonColor("normal").primary
         }
 
@@ -48,7 +55,7 @@ fun DroidDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pokemon #$pokemonId") },
+                title = { Text("") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -70,88 +77,129 @@ fun DroidDetailsScreen(
             contentAlignment = Alignment.Center,
         ) {
             when (val currentState = detailsState) {
-                is DroidDetailsUiState.Loading -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                is DroidDetailsUiState.Loading -> PokemonDetailsLoading()
+
+                is DroidDetailsUiState.Success ->
+                    PokemonDetailsSuccess(
+                        pokemonDetails = currentState.pokemonDetails,
+                        pokemonTypeColor = pokemonTypeColor,
+                    )
+
+                is DroidDetailsUiState.Error ->
+                    PokemonDetailsError(
+                        pokemonTypeColor = pokemonTypeColor,
                     ) {
-                        CircularProgressIndicator(color = Color.White)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Loading Pokemon details...",
-                            fontSize = 16.sp,
-                            color = Color.White,
-                        )
+                        viewModel.onRetry(pokemonId)
                     }
-                }
-                is DroidDetailsUiState.Success -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = currentState.pokemonDetails.name.replaceFirstChar { char -> char.uppercase() },
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Pokemon #${currentState.pokemonDetails.id}",
-                            fontSize = 18.sp,
-                            color = Color.White,
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Height: ${currentState.pokemonDetails.heightMeters}",
-                            fontSize = 16.sp,
-                            color = Color.White,
-                        )
-                        Text(
-                            text = "Weight: ${currentState.pokemonDetails.weightKg}",
-                            fontSize = 16.sp,
-                            color = Color.White,
-                        )
-                        Text(
-                            text = "Base Experience: ${currentState.pokemonDetails.baseExperience}",
-                            fontSize = 16.sp,
-                            color = Color.White,
-                        )
-                    }
-                }
-                is DroidDetailsUiState.Error -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(
-                            text = "Error loading Pokemon details",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = { viewModel.onRetry(pokemonId) },
-                            colors =
-                                ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                                ),
-                        ) {
-                            Text(
-                                text = "Retry",
-                                color = pokemonTypeColor,
-                            )
-                        }
-                    }
-                }
             }
         }
     }
 }
 
-@Preview
 @Composable
-fun DetailsScreenPreview() {
-    DroidDetailsScreen(
-        pokemonId = "1",
-        onBackClick = {},
-    )
+fun PokemonDetailsSuccess(
+    pokemonDetails: PokemonDetails,
+    pokemonTypeColor: Color,
+) {
+    Column(
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        DroidDetailsHeader(
+            vo =
+                DroidDetailsHeaderVo(
+                    pokemonName = pokemonDetails.name.replaceFirstChar { char -> char.uppercase() },
+                    pokemonNumber = pokemonDetails.id,
+                    backgroundColor = pokemonTypeColor,
+                    pokemonUrl = pokemonDetails.pokemonImageUrl,
+                ),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        PokemonDetailSheet(
+            pokemonDetails = pokemonDetails,
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+        )
+    }
+}
+
+@Composable
+fun PokemonDetailSheet(
+    pokemonDetails: PokemonDetails,
+    modifier: Modifier,
+) {
+    Surface(
+        modifier = modifier,
+        color = Color.White,
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        tonalElevation = 2.dp,
+    ) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+                    .verticalScroll(rememberScrollState()),
+        ) {
+            Text(
+                text = "Pokemon #${pokemonDetails.id}",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Black,
+            )
+            Spacer(Modifier.height(12.dp))
+            Text("Height: ${pokemonDetails.heightMeters}", color = Color.Black)
+            Text("Weight: ${pokemonDetails.weightKg}", color = Color.Black)
+            Text("Base Experience: ${pokemonDetails.baseExperience}", color = Color.Black)
+        }
+    }
+}
+
+@Composable
+fun PokemonDetailsLoading() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        CircularProgressIndicator(color = Color.White)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Loading Pokemon details...",
+            fontSize = 16.sp,
+            color = Color.White,
+        )
+    }
+}
+
+@Composable
+fun PokemonDetailsError(
+    pokemonTypeColor: Color,
+    retryCallback: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = "Error loading Pokemon details",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                retryCallback()
+            },
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                ),
+        ) {
+            Text(
+                text = "Retry",
+                color = pokemonTypeColor,
+            )
+        }
+    }
 }

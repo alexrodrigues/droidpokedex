@@ -8,6 +8,9 @@ fun PokemonDetailsResponse.toDomain(): PokemonDetails {
         id = id,
         name = name,
         baseExperience = base_experience,
+        pokemonImageUrl =
+            "https://raw.githubusercontent.com" +
+                "/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png",
         heightMeters = height / 10.0,
         weightKg = weight / 10.0,
         types = types.map { it.type.name },

@@ -18,19 +18,13 @@ class DroidDetailsViewModel
         private val _detailsStateFlow = MutableStateFlow<DroidDetailsUiState>(DroidDetailsUiState.Loading)
         val detailsStateFlow: StateFlow<DroidDetailsUiState> = _detailsStateFlow
 
-        private val _isLoading = MutableStateFlow(false)
-        val isLoading: StateFlow<Boolean> = _isLoading
-
         fun loadPokemonDetails(pokemonId: String) {
-            if (_isLoading.value) return
-
             val id = pokemonId.toIntOrNull()
             if (id == null) {
                 _detailsStateFlow.value = DroidDetailsUiState.Error
                 return
             }
 
-            _isLoading.value = true
             _detailsStateFlow.value = DroidDetailsUiState.Loading
 
             viewModelScope.launch {
@@ -43,7 +37,6 @@ class DroidDetailsViewModel
                 }.onFailure { throwable ->
                     _detailsStateFlow.value = DroidDetailsUiState.Error
                 }
-                _isLoading.value = false
             }
         }
 
