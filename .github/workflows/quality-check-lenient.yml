@@ -17,9 +17,9 @@ jobs:
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
-         with:
-           java-version: "17"
-           distribution: "temurin"
+        with:
+          java-version: "17"
+          distribution: "temurin"
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
@@ -88,4 +88,3 @@ jobs:
             network/build/reports/ktlint/
             home/data/build/reports/ktlint/
             details/data/build/reports/ktlint/
-
