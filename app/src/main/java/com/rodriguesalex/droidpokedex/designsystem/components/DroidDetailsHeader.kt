@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -60,8 +61,7 @@ fun DroidDetailsHeader(
             modifier =
                 Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(bottom = 32.dp)
-                    .size(230.dp),
+                    .padding(bottom = 32.dp),
         ) {
             Image(
                 painter = rememberAsyncImagePainter(model = R.drawable.pokeball),
@@ -71,7 +71,7 @@ fun DroidDetailsHeader(
                     Modifier
                         .size(200.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.5f)),
+                        .background(Color.White.copy(alpha = 0.25f)),
             )
 
             if (inPreview) {
