@@ -3,6 +3,7 @@ package com.rodriguesalex.droidpokedex.details
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rodriguesalex.details.domain.model.PokemonDetails
 import com.rodriguesalex.droidpokedex.details.viewmodel.DroidDetailsUiState
@@ -101,32 +103,60 @@ fun PokemonDetailsSuccess(
     pokemonDetails: PokemonDetails,
     pokemonTypeColor: Color,
 ) {
-    Column(
-        verticalArrangement = Arrangement.Top,
-        modifier = Modifier.fillMaxSize(),
+    val headerHeight = 300.dp
+    val corner = 24.dp
+
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(pokemonTypeColor)
     ) {
+        val remainingHeight = maxHeight - headerHeight + corner
+
         DroidDetailsHeader(
-            vo =
-                DroidDetailsHeaderVo(
-                    pokemonName = pokemonDetails.name.replaceFirstChar { char -> char.uppercase() },
-                    pokemonNumber = pokemonDetails.id,
-                    backgroundColor = pokemonTypeColor,
-                    pokemonUrl = pokemonDetails.pokemonImageUrl,
-                ),
+            vo = DroidDetailsHeaderVo(
+                pokemonName = pokemonDetails.name.replaceFirstChar { it.uppercase() },
+                pokemonNumber = pokemonDetails.id,
+                backgroundColor = pokemonTypeColor,
+                pokemonUrl = pokemonDetails.pokemonImageUrl,
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(headerHeight)
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        PokemonDetailSheet(
-            pokemonDetails = pokemonDetails,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-        )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(1f),
+            contentPadding = PaddingValues(
+                top = headerHeight - corner,
+                bottom = 24.dp
+            )
+        ) {
+            item {
+                Surface(
+                    color = Color.White,
+                    shape = RoundedCornerShape(topStart = corner, topEnd = corner),
+                    tonalElevation = 2.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = remainingHeight)
+                ) {
+                    PokemonDetailSheetContent(
+                        pokemonDetails = pokemonDetails,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
+                    )
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun PokemonDetailSheet(
+fun PokemonDetailSheetContent(
     pokemonDetails: PokemonDetails,
     modifier: Modifier,
 ) {
@@ -139,9 +169,9 @@ fun PokemonDetailSheet(
         Column(
             modifier =
                 Modifier
-                    .fillMaxSize()
-                    .padding(20.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .fillMaxWidth()
+                    .height(1000.dp)
+                    .padding(20.dp),
         ) {
             Text(
                 text = "Pokemon #${pokemonDetails.id}",

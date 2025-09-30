@@ -60,6 +60,7 @@ fun DroidDetailsHeader(
             modifier =
                 Modifier
                     .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 32.dp)
                     .size(230.dp),
         ) {
             Image(
