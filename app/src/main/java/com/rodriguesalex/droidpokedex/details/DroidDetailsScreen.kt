@@ -2,11 +2,8 @@ package com.rodriguesalex.droidpokedex.details
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
@@ -107,47 +104,54 @@ fun PokemonDetailsSuccess(
     val corner = 24.dp
 
     BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(pokemonTypeColor)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(pokemonTypeColor),
     ) {
         val remainingHeight = maxHeight - headerHeight + corner
 
         DroidDetailsHeader(
-            vo = DroidDetailsHeaderVo(
-                pokemonName = pokemonDetails.name.replaceFirstChar { it.uppercase() },
-                pokemonNumber = pokemonDetails.id,
-                backgroundColor = pokemonTypeColor,
-                pokemonUrl = pokemonDetails.pokemonImageUrl,
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(headerHeight)
+            vo =
+                DroidDetailsHeaderVo(
+                    pokemonName = pokemonDetails.name.replaceFirstChar { it.uppercase() },
+                    pokemonNumber = pokemonDetails.id,
+                    backgroundColor = pokemonTypeColor,
+                    pokemonUrl = pokemonDetails.pokemonImageUrl,
+                ),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(headerHeight),
         )
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .zIndex(1f),
-            contentPadding = PaddingValues(
-                top = headerHeight - corner,
-                bottom = 24.dp
-            )
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .zIndex(1f),
+            contentPadding =
+                PaddingValues(
+                    top = headerHeight - corner,
+                    bottom = 24.dp,
+                ),
         ) {
             item {
                 Surface(
                     color = Color.White,
                     shape = RoundedCornerShape(topStart = corner, topEnd = corner),
                     tonalElevation = 2.dp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = remainingHeight)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = remainingHeight),
                 ) {
                     PokemonDetailSheetContent(
                         pokemonDetails = pokemonDetails,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
                     )
                 }
             }
