@@ -4,8 +4,8 @@ import androidx.compose.ui.graphics.Color
 import com.rodriguesalex.domain.model.PokemonList
 import com.rodriguesalex.domain.model.PokemonListItem
 import com.rodriguesalex.domain.model.NamedAPIResource
-import com.rodriguesalex.details.domain.model.Sprites
-import com.rodriguesalex.details.domain.model.TypeSlot
+import com.rodriguesalex.domain.model.Sprites
+import com.rodriguesalex.domain.model.TypeSlot
 import com.rodriguesalex.domain.usecase.GetPokeHomeUseCase
 import com.rodriguesalex.domain.usecase.SearchPokemonUseCase
 import io.mockk.MockKAnnotations
@@ -378,4 +378,4 @@ class DroidHomeViewModelTest {
                 ),
         )
     }
-} 
+}

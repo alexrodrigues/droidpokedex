@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-01-21T09:27:57.265906Z">
+        <DropdownSelection timestamp="2025-09-27T16:26:35.987852Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/alexrodrigues/.android/avd/Pixel_8a_API_35.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/alexrodrigues/.android/avd/Pixel_9a.avd" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -19,15 +19,6 @@
       <SelectionState runConfigName="home.domain">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PokemonListScreenPreview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="DroidPrimaryButtonPreview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="DroidSecondaryButtonPreview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="details">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -37,7 +28,7 @@
       <SelectionState runConfigName="details.data">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="DetailsScreenPreview">
+      <SelectionState runConfigName="DroidDetailsHeaderPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
