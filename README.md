@@ -11,7 +11,9 @@ A Pokédex app for browsing and searching Pokémon using the public [PokéAPI](h
 - Paginated Pokémon list with types and artwork (images via **Coil**)
 - Search by name
 - Detail screen with stats and metadata
-- **Remote-first**: all Pokémon data is loaded over HTTPS; there is no local database or offline cache in this codebase
+- **Remote-first with session cache**: list, search, and detail requests load from [PokéAPI](https://pokeapi.co/) over HTTPS. Repositories keep a **small in-memory cache** (per app process); on **network or HTTP failures** they can return the last successful payload and the UI shows an **offline banner** ([`PokeHomeRepositoryImpl`](home/data/src/main/java/com/rodriguesalex/data/repository/PokeHomeRepositoryImpl.kt), [`PokeDetailsRepositoryImpl`](details/data/src/main/java/com/rodriguesalex/details/data/repository/PokeDetailsRepositoryImpl.kt)). There is **no Room/DataStore disk cache**—data is not persisted across process death.
+- **Clearer error states**: failures are classified (no connection, API HTTP errors with status, invalid Pokémon id, generic) and shown with title, message, optional detail, and retry ([`UserErrorMapper`](app/src/main/java/com/rodriguesalex/droidpokedex/util/UserErrorMapper.kt), [`strings.xml`](app/src/main/res/values/strings.xml)).
+- **Debug-only HTTP logging**: OkHttp **body** logging runs only when **`BuildConfig.DEBUG`** is true in the `:network` module ([`PokeNetworkModule`](network/src/main/java/com/rodriguesalex/droidpokedex/network/PokeNetworkModule.kt)); release builds do not attach the logging interceptor.
 
 ## Requirements
 
@@ -128,9 +130,8 @@ To run the default verification pipeline for all modules (unit tests, Android Li
 
 ## Limitations and possible extensions
 
-- **No offline or disk cache** (no Room, DataStore, or similar). Improving perceived performance would mean adding a cache layer and sync strategy; image loading still benefits from Coil’s in-memory/disk cache for URLs.
-- **HTTP logging** is always attached in [`PokeNetworkModule`](network/src/main/java/com/rodriguesalex/droidpokedex/network/PokeNetworkModule.kt); gating it on `BuildConfig.DEBUG` would better match production hygiene.
-- **CI** on `main` runs **`assembleDebug`**, **`ktlintCheck`**, **`detekt`**, and **`test`** via GitHub Actions (see [Continuous integration](#continuous-integration)). Android Lint and the full `./gradlew check` graph are not duplicated in CI unless you add them.
+- **No durable offline store**: in-memory cache helps during a single run when the API fails; **persisting** lists or details (Room, DataStore, or similar) would improve true offline use and startup after process death. Coil still caches images for URLs on disk where configured.
+- **CI** on `main` runs **`assembleDebug`**, **`ktlintCheck`**, **`detekt`**, and **`test`** (see [Continuous integration](#continuous-integration)). The full **`./gradlew check`** graph (including Android Lint) is not run in CI unless you add it.
 - **Accessibility**: Compose previews help iteration, but a serious pass would add content descriptions, contrast checks, and TalkBack testing—not claimed here.
 
 ## Tech stack (summary)
@@ -140,6 +141,7 @@ To run the default verification pipeline for all modules (unit tests, Android Li
 - Retrofit, OkHttp, Gson  
 - Coil  
 - JUnit, MockK, kotlinx-coroutines-test, Paparazzi, Compose UI tests  
+- GitHub Actions (build, ktlint, Detekt, unit tests)  
 
 ## API
 
