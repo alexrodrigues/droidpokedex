@@ -2,6 +2,7 @@ package com.rodriguesalex.droidpokedex.network
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.rodriguesalex.network.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,13 +25,13 @@ object PokeNetworkModule {
     fun provideOkHttpClient(): OkHttpClient {
         val builder = OkHttpClient.Builder()
 
-//        if (BuildConfig.DEBUG) {
-        val loggingInterceptor =
-            HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            }
-        builder.addInterceptor(loggingInterceptor)
-//        }
+        if (BuildConfig.DEBUG) {
+            val loggingInterceptor =
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                }
+            builder.addInterceptor(loggingInterceptor)
+        }
 
         return builder.build()
     }

@@ -2,7 +2,9 @@ package com.rodriguesalex.droidpokedex.details.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rodriguesalex.details.domain.model.DetailsRemoteSource
 import com.rodriguesalex.details.domain.usecase.GetPokeDetailsUseCase
+import com.rodriguesalex.droidpokedex.util.UserErrorMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +28,7 @@ class DroidDetailsViewModel
 
             val id = pokemonId.toIntOrNull()
             if (id == null) {
-                _detailsStateFlow.value = DroidDetailsUiState.Error
+                _detailsStateFlow.value = DroidDetailsUiState.Error(UserErrorMapper.invalidPokemonId())
                 return
             }
 
@@ -38,10 +40,15 @@ class DroidDetailsViewModel
                     getPokeDetailsUseCase.invoke(
                         GetPokeDetailsUseCase.Params(id = id),
                     )
-                }.onSuccess { pokemonDetails ->
-                    _detailsStateFlow.value = DroidDetailsUiState.Success(pokemonDetails)
+                }.onSuccess { outcome ->
+                    _detailsStateFlow.value =
+                        DroidDetailsUiState.Success(
+                            pokemonDetails = outcome.value,
+                            isOfflineData = outcome.source == DetailsRemoteSource.CACHE,
+                        )
                 }.onFailure { throwable ->
-                    _detailsStateFlow.value = DroidDetailsUiState.Error
+                    _detailsStateFlow.value =
+                        DroidDetailsUiState.Error(UserErrorMapper.from(throwable))
                 }
                 _isLoading.value = false
             }

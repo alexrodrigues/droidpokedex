@@ -1,9 +1,11 @@
 package com.rodriguesalex.droidpokedex.home.viewmodel
 
 import androidx.compose.ui.graphics.Color
+import com.rodriguesalex.domain.model.FetchOutcome
 import com.rodriguesalex.domain.model.PokemonList
 import com.rodriguesalex.domain.model.PokemonListItem
 import com.rodriguesalex.domain.model.NamedAPIResource
+import com.rodriguesalex.domain.model.RemoteDataSource
 import com.rodriguesalex.domain.model.Sprites
 import com.rodriguesalex.domain.model.TypeSlot
 import com.rodriguesalex.domain.usecase.GetPokeHomeUseCase
@@ -74,7 +76,7 @@ class DroidHomeViewModelTest {
 
             coEvery {
                 getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
-            } returns expectedPokemonList
+            } returns FetchOutcome(expectedPokemonList, RemoteDataSource.NETWORK)
 
             // Act
             viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
@@ -105,7 +107,7 @@ class DroidHomeViewModelTest {
 
             coEvery {
                 getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
-            } returns initialPokemonList
+            } returns FetchOutcome(initialPokemonList, RemoteDataSource.NETWORK)
 
             // Act - Initial load
             viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
@@ -122,7 +124,7 @@ class DroidHomeViewModelTest {
 
             coEvery {
                 getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 20))
-            } returns secondPagePokemonList
+            } returns FetchOutcome(secondPagePokemonList, RemoteDataSource.NETWORK)
 
             // Act - Load more
             viewModel.loadMorePokemons()
@@ -169,7 +171,7 @@ class DroidHomeViewModelTest {
 
             coEvery {
                 getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
-            } returns initialPokemonList
+            } returns FetchOutcome(initialPokemonList, RemoteDataSource.NETWORK)
 
             viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
             testDispatcher.scheduler.advanceUntilIdle()
@@ -177,7 +179,7 @@ class DroidHomeViewModelTest {
             // Arrange - Reset load
             coEvery {
                 getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
-            } returns initialPokemonList
+            } returns FetchOutcome(initialPokemonList, RemoteDataSource.NETWORK)
 
             // Act
             viewModel.onSearchQueryChanged("")
@@ -206,7 +208,7 @@ class DroidHomeViewModelTest {
 
             coEvery {
                 getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
-            } returns initialPokemonList
+            } returns FetchOutcome(initialPokemonList, RemoteDataSource.NETWORK)
 
             viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
             testDispatcher.scheduler.advanceUntilIdle()
@@ -217,7 +219,7 @@ class DroidHomeViewModelTest {
 
             coEvery {
                 searchPokemonUseCase.invoke(SearchPokemonUseCase.Params(searchQuery))
-            } returns searchedPokemon
+            } returns FetchOutcome(searchedPokemon, RemoteDataSource.NETWORK)
 
             // Act
             viewModel.onSearchQueryChanged(searchQuery)
@@ -247,7 +249,7 @@ class DroidHomeViewModelTest {
 
             coEvery {
                 getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
-            } returns initialPokemonList
+            } returns FetchOutcome(initialPokemonList, RemoteDataSource.NETWORK)
 
             viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
             testDispatcher.scheduler.advanceUntilIdle()
@@ -283,7 +285,7 @@ class DroidHomeViewModelTest {
 
             coEvery {
                 getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
-            } returns initialPokemonList
+            } returns FetchOutcome(initialPokemonList, RemoteDataSource.NETWORK)
 
             // Act
             viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
@@ -307,7 +309,7 @@ class DroidHomeViewModelTest {
 
             coEvery {
                 getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
-            } returns initialPokemonList
+            } returns FetchOutcome(initialPokemonList, RemoteDataSource.NETWORK)
 
             viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
             testDispatcher.scheduler.advanceUntilIdle()
@@ -316,11 +318,14 @@ class DroidHomeViewModelTest {
             coEvery {
                 getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 20))
             } returns
-                PokemonList(
-                    count = 5,
-                    next = null,
-                    previous = "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20",
-                    results = mockPokemonList2,
+                FetchOutcome(
+                    PokemonList(
+                        count = 5,
+                        next = null,
+                        previous = "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20",
+                        results = mockPokemonList2,
+                    ),
+                    RemoteDataSource.NETWORK,
                 )
 
             // Act - Call loadMorePokemons multiple times rapidly

@@ -1,9 +1,11 @@
 package com.rodriguesalex.domain
 
 import com.rodriguesalex.domain.mapper.toModel
+import com.rodriguesalex.domain.model.FetchOutcome
 import com.rodriguesalex.domain.model.PokemonList
 import com.rodriguesalex.domain.model.PokemonListItem
 import com.rodriguesalex.domain.model.PokemonListResponse
+import com.rodriguesalex.domain.model.RemoteDataSource
 import com.rodriguesalex.domain.repository.PokeHomeRepository
 import com.rodriguesalex.domain.usecase.GetPokeHomeUseCase
 import io.mockk.MockKAnnotations
@@ -57,15 +59,17 @@ class GetPokeHomeUseCaseTest {
                         )
                 }
 
-            coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
+            coEvery {
+                repository.fetchPokemonHome(params.limit, params.offset)
+            } returns FetchOutcome(mockedResponse, RemoteDataSource.NETWORK)
 
             // Act
             val result = getPokeHomeUseCase.invoke(params)
 
             // Assert
-            assertEquals(2, result.results.size)
-            assertEquals("Pikachu", result.results.first().name)
-            assertEquals("Bulbasaur", result.results[1].name)
+            assertEquals(2, result.value.results.size)
+            assertEquals("Pikachu", result.value.results.first().name)
+            assertEquals("Bulbasaur", result.value.results[1].name)
         }
 
     @Test
@@ -83,14 +87,16 @@ class GetPokeHomeUseCaseTest {
                             previous = null,
                         )
                 }
-            coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
+            coEvery {
+                repository.fetchPokemonHome(params.limit, params.offset)
+            } returns FetchOutcome(mockedResponse, RemoteDataSource.NETWORK)
 
             // Act
             val result = getPokeHomeUseCase.invoke(params)
 
             // Assert
-            assertEquals(0, result.results.size)
-            assertEquals(0, result.count)
+            assertEquals(0, result.value.results.size)
+            assertEquals(0, result.value.count)
         }
 
     @Test(expected = RuntimeException::class)
@@ -120,7 +126,9 @@ class GetPokeHomeUseCaseTest {
                             previous = null,
                         )
                 }
-            coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
+            coEvery {
+                repository.fetchPokemonHome(params.limit, params.offset)
+            } returns FetchOutcome(mockedResponse, RemoteDataSource.NETWORK)
 
             // Act
             getPokeHomeUseCase.invoke(params)
@@ -144,7 +152,9 @@ class GetPokeHomeUseCaseTest {
                             previous = null,
                         )
                 }
-            coEvery { repository.fetchPokemonHome(params.limit, params.offset) } returns mockedResponse
+            coEvery {
+                repository.fetchPokemonHome(params.limit, params.offset)
+            } returns FetchOutcome(mockedResponse, RemoteDataSource.NETWORK)
 
             // Act
             getPokeHomeUseCase.invoke(params)

@@ -5,12 +5,14 @@ import com.rodriguesalex.data.service.PokeHomeService
 import com.rodriguesalex.domain.model.PokemonListDetailedItemResponse
 import com.rodriguesalex.domain.model.PokemonListItemResponse
 import com.rodriguesalex.domain.model.PokemonListResponse
+import com.rodriguesalex.domain.model.RemoteDataSource
 import com.rodriguesalex.domain.repository.PokeHomeRepository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import java.io.IOException
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -74,9 +76,48 @@ class PokeHomeRepositoryImplTest {
             val result = pokeHomeRepository.fetchPokemonHome(limit, offset)
 
             // Assert
-            assertEquals(2, result.detailedResults!!.size)
-            assertEquals(pikachuDetails.name, result.detailedResults!!.first().name)
-            assertEquals(bulbasaurDetails.name, result.detailedResults!![1].name)
+            assertEquals(RemoteDataSource.NETWORK, result.source)
+            assertEquals(2, result.value.detailedResults!!.size)
+            assertEquals(pikachuDetails.name, result.value.detailedResults!!.first().name)
+            assertEquals(bulbasaurDetails.name, result.value.detailedResults!![1].name)
+        }
+
+    @Test
+    fun `fetchPokemonHome returns cache when network fails after successful load`() =
+        runTest {
+            val limit = 10
+            val offset = 0
+            val pikachuDetails =
+                mockk<PokemonListDetailedItemResponse> {
+                    every { name } returns "Pikachu"
+                }
+            val pokemonResults =
+                listOf(
+                    PokemonListItemResponse(name = "Pikachu", url = "https://pokeapi.co/api/v2/pokemon/1/"),
+                )
+            val pokemonListResponse =
+                PokemonListResponse(
+                    results = pokemonResults,
+                    count = 1,
+                    next = null,
+                    previous = null,
+                )
+
+            coEvery { pokeHomeService.fetchHomePokemonDetail(any()) } returns pikachuDetails
+
+            var listFetchCount = 0
+            coEvery { pokeHomeService.fetchPokemonList(limit, offset) } answers {
+                when (listFetchCount++) {
+                    0 -> pokemonListResponse
+                    else -> throw IOException("offline")
+                }
+            }
+
+            val first = pokeHomeRepository.fetchPokemonHome(limit, offset)
+            assertEquals(RemoteDataSource.NETWORK, first.source)
+            val second = pokeHomeRepository.fetchPokemonHome(limit, offset)
+            assertEquals(RemoteDataSource.CACHE, second.source)
+            assertEquals("Pikachu", second.value.detailedResults!!.first().name)
         }
 
     @Test
@@ -99,10 +140,11 @@ class PokeHomeRepositoryImplTest {
             val result = pokeHomeRepository.searchPokemon(pokemonName)
 
             // Assert
-            assertEquals(expectedPokemonDetails, result)
-            assertEquals("Pikachu", result.name)
-            assertEquals(4, result.height)
-            assertEquals(60, result.weight)
+            assertEquals(RemoteDataSource.NETWORK, result.source)
+            assertEquals(expectedPokemonDetails, result.value)
+            assertEquals("Pikachu", result.value.name)
+            assertEquals(4, result.value.height)
+            assertEquals(60, result.value.weight)
         }
 
     @Test

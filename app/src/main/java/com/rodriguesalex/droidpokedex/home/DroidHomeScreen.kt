@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -73,8 +74,17 @@ internal fun DroidHomeScreen(
 
             when (homePageState) {
                 is DroidHomeUiState.Error -> {
+                    val err = homePageState as DroidHomeUiState.Error
                     DroidErrorComponent(
-                        message = stringResource(id = R.string.error_message),
+                        title = stringResource(id = err.info.titleRes),
+                        message = stringResource(id = err.info.messageRes),
+                        detail =
+                            err.info.detailRes?.let { resId ->
+                                when (val arg = err.info.detailArg) {
+                                    is Int -> stringResource(id = resId, arg)
+                                    else -> stringResource(id = resId)
+                                }
+                            },
                         onRetryClick = {
                             viewModel.onRetry()
                         },
@@ -95,9 +105,21 @@ internal fun DroidHomeScreen(
                 }
 
                 is DroidHomeUiState.Success -> {
-                    val pokemons = (homePageState as DroidHomeUiState.Success).pokemons
+                    val successState = homePageState as DroidHomeUiState.Success
+                    val pokemons = successState.pokemons
 
                     LazyColumn {
+                        if (successState.isOfflineData) {
+                            item {
+                                OfflineDataBanner(
+                                    modifier =
+                                        Modifier.padding(
+                                            horizontal = Spacing.MEDIUM.dp,
+                                            vertical = Spacing.SMALL.dp,
+                                        ),
+                                )
+                            }
+                        }
                         items(pokemons.size) { index ->
                             val pokemon = pokemons[index]
                             DroidHomeCell(
@@ -112,7 +134,7 @@ internal fun DroidHomeScreen(
                                 },
                             )
 
-                            val isSearching = (homePageState as DroidHomeUiState.Success).isSearching
+                            val isSearching = successState.isSearching
 
                             if (index >= pokemons.size - 3 && !isLoading && !isSearching) {
                                 viewModel.loadMorePokemons()
@@ -195,3 +217,19 @@ private fun searchTextFieldColors() =
         focusedIndicatorColor = Color.White,
         unfocusedIndicatorColor = Color.White,
     )
+
+@Composable
+private fun OfflineDataBanner(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = Color.Black.copy(alpha = 0.28f),
+        shape = RoundedCornerShape(Spacing.SMALL.dp),
+    ) {
+        Text(
+            text = stringResource(id = R.string.offline_data_banner),
+            color = Color.White,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(Spacing.MEDIUM.dp),
+        )
+    }
+}

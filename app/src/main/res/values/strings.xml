@@ -2,4 +2,15 @@
     <string name="app_name">DroidPokedex</string>
     <string name="error_message">Something went wrong</string>
     <string name="retry">Retry</string>
+
+    <string name="error_network_title">No connection</string>
+    <string name="error_network_message">Check your internet connection and try again.</string>
+    <string name="error_server_title">Server problem</string>
+    <string name="error_server_message">The PokéAPI returned an error. Try again in a moment.</string>
+    <string name="error_server_detail">HTTP status %1$d</string>
+    <string name="error_unknown_title">Something went wrong</string>
+    <string name="error_unknown_message">An unexpected error occurred.</string>
+    <string name="error_invalid_id_title">Invalid Pokémon</string>
+    <string name="error_invalid_id_message">This ID doesn’t match a Pokémon.</string>
+    <string name="offline_data_banner">Showing saved data. Connect to the internet to refresh.</string>
 </resources>

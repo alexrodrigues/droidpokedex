@@ -1,6 +1,8 @@
 package com.rodriguesalex.domain
 
+import com.rodriguesalex.domain.model.FetchOutcome
 import com.rodriguesalex.domain.model.PokemonListDetailedItemResponse
+import com.rodriguesalex.domain.model.RemoteDataSource
 import com.rodriguesalex.domain.repository.PokeHomeRepository
 import com.rodriguesalex.domain.usecase.SearchPokemonUseCase
 import io.mockk.MockKAnnotations
@@ -39,13 +41,15 @@ class SearchPokemonUseCaseTest {
                     every { name } returns "Pikachu"
                 }
 
-            coEvery { repository.searchPokemon(params.name) } returns pikachu
+            coEvery {
+                repository.searchPokemon(params.name)
+            } returns FetchOutcome(pikachu, RemoteDataSource.NETWORK)
 
             // Act
             val result = searchPokemonUseCase.invoke(params)
 
             // Assert
-            assertEquals(pikachu.name, result.name)
+            assertEquals(pikachu.name, result.value.name)
         }
 
     @Test
@@ -70,7 +74,9 @@ class SearchPokemonUseCaseTest {
             // Arrange
             val params = SearchPokemonUseCase.Params(name = "Bulbasaur")
             val bulbasaurResponse = mockk<PokemonListDetailedItemResponse>(relaxed = true)
-            coEvery { repository.searchPokemon(params.name) } returns bulbasaurResponse
+            coEvery {
+                repository.searchPokemon(params.name)
+            } returns FetchOutcome(bulbasaurResponse, RemoteDataSource.NETWORK)
             // The mapping extension is static-mocked in setup
             // Act
             searchPokemonUseCase.invoke(params)
@@ -84,7 +90,9 @@ class SearchPokemonUseCaseTest {
             // Arrange
             val params = SearchPokemonUseCase.Params(name = "Charmander")
             val charmanderResponse = mockk<PokemonListDetailedItemResponse>(relaxed = true)
-            coEvery { repository.searchPokemon(params.name) } returns charmanderResponse
+            coEvery {
+                repository.searchPokemon(params.name)
+            } returns FetchOutcome(charmanderResponse, RemoteDataSource.NETWORK)
             // Act
             searchPokemonUseCase.invoke(params)
             // Assert
