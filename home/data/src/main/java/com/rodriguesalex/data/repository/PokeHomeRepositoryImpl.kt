@@ -6,9 +6,12 @@ import com.rodriguesalex.domain.model.PokemonListDetailedItemResponse
 import com.rodriguesalex.domain.model.PokemonListResponse
 import com.rodriguesalex.domain.model.RemoteDataSource
 import com.rodriguesalex.domain.repository.PokeHomeRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import retrofit2.HttpException
+import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
@@ -38,10 +41,12 @@ class PokeHomeRepositoryImpl
                 val enriched = listResponse.copy(detailedResults = fetchedDetails)
                 homeListCache[cacheKey] = enriched
                 FetchOutcome(enriched, RemoteDataSource.NETWORK)
-            } catch (e: Exception) {
-                homeListCache[cacheKey]?.let { cached ->
-                    FetchOutcome(cached, RemoteDataSource.CACHE)
-                } ?: throw e
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: IOException) {
+                recoverHomeList(cacheKey, e)
+            } catch (e: HttpException) {
+                recoverHomeList(cacheKey, e)
             }
         }
 
@@ -51,10 +56,28 @@ class PokeHomeRepositoryImpl
                 val result = pokeHomeService.searchPokemon(name)
                 searchCache[key] = result
                 FetchOutcome(result, RemoteDataSource.NETWORK)
-            } catch (e: Exception) {
-                searchCache[key]?.let { cached ->
-                    FetchOutcome(cached, RemoteDataSource.CACHE)
-                } ?: throw e
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: IOException) {
+                recoverSearch(key, e)
+            } catch (e: HttpException) {
+                recoverSearch(key, e)
             }
         }
+
+        private fun recoverHomeList(
+            cacheKey: String,
+            error: Throwable,
+        ): FetchOutcome<PokemonListResponse> =
+            homeListCache[cacheKey]?.let { cached ->
+                FetchOutcome(cached, RemoteDataSource.CACHE)
+            } ?: throw error
+
+        private fun recoverSearch(
+            key: String,
+            error: Throwable,
+        ): FetchOutcome<PokemonListDetailedItemResponse> =
+            searchCache[key]?.let { cached ->
+                FetchOutcome(cached, RemoteDataSource.CACHE)
+            } ?: throw error
     }
