@@ -1,4 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+import io.gitlab.arturbosch.detekt.Detekt
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
@@ -16,10 +18,15 @@ subprojects {
     afterEvaluate {
         extensions.findByType<io.gitlab.arturbosch.detekt.extensions.DetektExtension>()?.apply {
             toolVersion = "1.23.0"
-            config = files("$rootDir/config/detekt/detekt.yml")
+            config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
             buildUponDefaultConfig = true
             allRules = false
             autoCorrect = true
+        }
+
+        // Detekt 1.23 does not accept JVM target 20+; pin to match Android modules (Java 17).
+        tasks.withType<Detekt>().configureEach {
+            jvmTarget = "17"
         }
 
         extensions.findByType<org.jlleitschuh.gradle.ktlint.KtlintExtension>()?.apply {

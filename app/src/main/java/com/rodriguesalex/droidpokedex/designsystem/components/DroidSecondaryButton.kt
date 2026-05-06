@@ -15,7 +15,7 @@ fun DroidSecondaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-)  {
+) {
     Button(
         colors =
             ButtonDefaults.buttonColors(
@@ -41,7 +41,7 @@ fun DroidSecondaryButton(
 
 @Preview
 @Composable
-fun DroidSecondaryButtonPreview()  {
+fun DroidSecondaryButtonPreview() {
     DroidSecondaryButton(
         text = "Primary Button",
         onClick = {},

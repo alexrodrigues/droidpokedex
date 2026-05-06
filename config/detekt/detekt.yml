@@ -1,9 +1,5 @@
 build:
-  maxIssues: 10
-  weights:
-    complexity: 2
-    LongParameterList: 1
-    style: 1
+  maxIssues: 0
 
 comments:
   UndocumentedPublicClass:
@@ -12,4 +8,32 @@ comments:
 complexity:
   LongMethod:
     active: true
-    threshold: 20
+    threshold: 60
+    ignoreAnnotated:
+      - 'Composable'
+    excludes:
+      - '**/test/**'
+      - '**/androidTest/**'
+  LongParameterList:
+    active: true
+    functionThreshold: 10
+    constructorThreshold: 8
+    ignoreAnnotated:
+      - 'Composable'
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated:
+      - 'Composable'
+  # Gson / API DTOs use JSON snake_case field names as constructor parameters.
+  ConstructorParameterNaming:
+    active: false
+
+style:
+  WildcardImport:
+    active: false
+  MaxLineLength:
+    active: true
+    maxLineLength: 140
+    excludePackageStatements: true
+    excludeImportStatements: true

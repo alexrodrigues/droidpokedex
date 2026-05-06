@@ -378,4 +378,4 @@ class DroidHomeViewModelTest {
                 ),
         )
     }
-} 
+}

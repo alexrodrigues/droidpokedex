@@ -20,4 +20,4 @@ class SimplePaparazziTest {
             Text("Hello Paparazzi!")
         }
     }
-} 
+}

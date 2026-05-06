@@ -1,5 +1,7 @@
 # DroidPokedex
 
+[![CI](https://github.com/alexrodrigues/droidpokedex/actions/workflows/ci.yml/badge.svg)](https://github.com/alexrodrigues/droidpokedex/actions/workflows/ci.yml)
+
 A Pokédex app for browsing and searching Pokémon using the public [PokéAPI](https://pokeapi.co/). It is built with **Kotlin**, **Jetpack Compose** (Material 3), **Navigation Compose**, and **Hilt** for dependency injection. The project follows a **multi-module, layered structure** (domain / data per feature, shared networking) inspired by Clean Architecture.
 
 ![Pokedex home and list experience](poke.png)
@@ -45,10 +47,10 @@ After intentional UI changes, record new Paparazzi baselines:
 
 ## Continuous integration
 
-[GitHub Actions](https://docs.github.com/en/actions) runs on every **push** and **pull request** targeting **`main`**. The workflow is defined in [`.github/workflows/ci.yml`](.github/workflows/ci.yml): it sets up **Temurin JDK 17**, the **Android SDK** (`android-actions/setup-android`), Gradle caching (`gradle/actions/setup-gradle`), then executes:
+[GitHub Actions](https://docs.github.com/en/actions) runs on every **push** and **pull request** targeting **`main`**. The workflow is defined in [`.github/workflows/ci.yml`](.github/workflows/ci.yml): it sets up **Temurin JDK 17**, the **Android SDK** (`android-actions/setup-android`), Gradle caching (`gradle/actions/setup-gradle`), then runs **ktlint**, **Detekt**, a **debug build**, and **unit tests**:
 
 ```sh
-./gradlew assembleDebug test --stacktrace -Dorg.gradle.java.home="$JAVA_HOME"
+./gradlew assembleDebug ktlintCheck detekt test --stacktrace -Dorg.gradle.java.home="$JAVA_HOME"
 ```
 
 The `-Dorg.gradle.java.home=…` flag matches CI’s JDK with the value from `actions/setup-java` and overrides the optional machine-specific `org.gradle.java.home` entry in [`gradle.properties`](gradle.properties) (for example a local Homebrew path). Instrumented tests on an emulator are not part of this workflow; run those locally when needed.
@@ -128,7 +130,7 @@ To run the default verification pipeline for all modules (unit tests, Android Li
 
 - **No offline or disk cache** (no Room, DataStore, or similar). Improving perceived performance would mean adding a cache layer and sync strategy; image loading still benefits from Coil’s in-memory/disk cache for URLs.
 - **HTTP logging** is always attached in [`PokeNetworkModule`](network/src/main/java/com/rodriguesalex/droidpokedex/network/PokeNetworkModule.kt); gating it on `BuildConfig.DEBUG` would better match production hygiene.
-- **CI** runs **`assembleDebug`** and **`test`** on `main` via GitHub Actions (see [Continuous integration](#continuous-integration)). Broader checks such as `./gradlew check` (Lint, Detekt, ktlint) are left to local runs or a follow-up workflow if you want them enforced on every PR.
+- **CI** on `main` runs **`assembleDebug`**, **`ktlintCheck`**, **`detekt`**, and **`test`** via GitHub Actions (see [Continuous integration](#continuous-integration)). Android Lint and the full `./gradlew check` graph are not duplicated in CI unless you add them.
 - **Accessibility**: Compose previews help iteration, but a serious pass would add content descriptions, contrast checks, and TalkBack testing—not claimed here.
 
 ## Tech stack (summary)
