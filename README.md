@@ -43,6 +43,16 @@ After intentional UI changes, record new Paparazzi baselines:
 ./gradlew recordPaparazziDebug
 ```
 
+## Continuous integration
+
+[GitHub Actions](https://docs.github.com/en/actions) runs on every **push** and **pull request** targeting **`main`**. The workflow is defined in [`.github/workflows/ci.yml`](.github/workflows/ci.yml): it sets up **Temurin JDK 17**, the **Android SDK** (`android-actions/setup-android`), Gradle caching (`gradle/actions/setup-gradle`), then executes:
+
+```sh
+./gradlew assembleDebug test --stacktrace -Dorg.gradle.java.home="$JAVA_HOME"
+```
+
+The `-Dorg.gradle.java.home=…` flag matches CI’s JDK with the value from `actions/setup-java` and overrides the optional machine-specific `org.gradle.java.home` entry in [`gradle.properties`](gradle.properties) (for example a local Homebrew path). Instrumented tests on an emulator are not part of this workflow; run those locally when needed.
+
 ## Architecture
 
 Modules are declared in [`settings.gradle.kts`](settings.gradle.kts). **Domain** layers expose use cases and repository interfaces; **data** layers implement repositories and Retrofit service interfaces. The **`:network`** module provides a single configured `Retrofit` instance (with `OkHttp` and Gson). Feature data modules depend on **`:feature:domain`** and obtain `Retrofit` through **Hilt** bindings (they do not need a direct Gradle dependency on `:network` for the Retrofit type).
@@ -118,7 +128,7 @@ To run the default verification pipeline for all modules (unit tests, Android Li
 
 - **No offline or disk cache** (no Room, DataStore, or similar). Improving perceived performance would mean adding a cache layer and sync strategy; image loading still benefits from Coil’s in-memory/disk cache for URLs.
 - **HTTP logging** is always attached in [`PokeNetworkModule`](network/src/main/java/com/rodriguesalex/droidpokedex/network/PokeNetworkModule.kt); gating it on `BuildConfig.DEBUG` would better match production hygiene.
-- **CI** is not configured in this repository. A small **GitHub Actions** workflow running `./gradlew check` (or `test`, `detekt`, `ktlintCheck`) on pull requests would document quality expectations for reviewers.
+- **CI** runs **`assembleDebug`** and **`test`** on `main` via GitHub Actions (see [Continuous integration](#continuous-integration)). Broader checks such as `./gradlew check` (Lint, Detekt, ktlint) are left to local runs or a follow-up workflow if you want them enforced on every PR.
 - **Accessibility**: Compose previews help iteration, but a serious pass would add content descriptions, contrast checks, and TalkBack testing—not claimed here.
 
 ## Tech stack (summary)
