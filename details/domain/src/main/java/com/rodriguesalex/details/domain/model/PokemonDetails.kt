@@ -10,7 +10,16 @@ data class PokemonDetails(
     val abilities: List<Ability>,
     val stats: Map<String, Int>,
     val sprites: Sprites,
+    val officialArtworkUrl: String,
+    val genus: String?,
+    val flavorText: String?,
+    val evolutionChain: List<EvolutionStage>,
 ) {
+    data class EvolutionStage(
+        val id: Int,
+        val name: String,
+        val spriteUrl: String,
+    )
     data class Ability(
         val name: String,
         val hidden: Boolean,

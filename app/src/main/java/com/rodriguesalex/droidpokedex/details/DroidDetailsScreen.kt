@@ -1,32 +1,58 @@
+@file:Suppress("FunctionNaming", "MagicNumber", "LongMethod")
+
 package com.rodriguesalex.droidpokedex.details
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material.icons.outlined.FitnessCenter
+import androidx.compose.material.icons.outlined.Straighten
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.rodriguesalex.details.domain.model.PokemonDetails
+import com.rodriguesalex.domain.model.DroidPokemonTypeColor
 import com.rodriguesalex.droidpokedex.R
+import com.rodriguesalex.droidpokedex.designsystem.components.BaseStatsSection
+import com.rodriguesalex.droidpokedex.designsystem.components.DescriptionCard
+import com.rodriguesalex.droidpokedex.designsystem.components.DetailsTopBar
 import com.rodriguesalex.droidpokedex.designsystem.components.DroidErrorComponent
+import com.rodriguesalex.droidpokedex.designsystem.components.EvolutionChainSection
+import com.rodriguesalex.droidpokedex.designsystem.components.PokemonHeroSection
+import com.rodriguesalex.droidpokedex.designsystem.components.StatInfoCard
+import com.rodriguesalex.droidpokedex.designsystem.components.TypePillTag
+import com.rodriguesalex.droidpokedex.designsystem.tokens.Colors
 import com.rodriguesalex.droidpokedex.designsystem.tokens.Spacing
 import com.rodriguesalex.droidpokedex.details.viewmodel.DroidDetailsUiState
 import com.rodriguesalex.droidpokedex.details.viewmodel.DroidDetailsViewModel
-import com.rodriguesalex.domain.model.DroidPokemonTypeColor
-import androidx.compose.ui.res.stringResource
+import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DroidDetailsScreen(
     pokemonId: String,
@@ -35,33 +61,32 @@ fun DroidDetailsScreen(
 ) {
     val detailsState by viewModel.detailsStateFlow.collectAsState()
 
-    val pokemonTypeColor: Color =
-        when (val currentState = detailsState) {
-            is DroidDetailsUiState.Success -> {
-                DroidPokemonTypeColor.getPokemonColor(
-                    currentState.pokemonDetails.primaryType ?: "normal",
-                ).primary
-            }
-            else -> DroidPokemonTypeColor.getPokemonColor("normal").primary
-        }
-
     LaunchedEffect(pokemonId) {
         viewModel.loadPokemonDetails(pokemonId)
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Pokemon #$pokemonId") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+    val topBarTitle =
+        when (val state = detailsState) {
+            is DroidDetailsUiState.Success -> {
+                val name =
+                    state.pokemonDetails.name.replaceFirstChar { char ->
+                        if (char.isLowerCase()) {
+                            char.titlecase(Locale.getDefault())
+                        } else {
+                            char.toString()
+                        }
                     }
-                },
-                colors =
-                    TopAppBarDefaults.topAppBarColors(
-                        containerColor = pokemonTypeColor,
-                    ),
+                "$name Entry #${state.pokemonDetails.id.toString().padStart(3, '0')}"
+            }
+            else -> "Pokemon #$pokemonId"
+        }
+
+    Scaffold(
+        containerColor = Colors.pokedexRed,
+        topBar = {
+            DetailsTopBar(
+                title = topBarTitle,
+                onBackClick = onBackClick,
             )
         },
     ) { innerPadding ->
@@ -69,76 +94,17 @@ fun DroidDetailsScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .background(pokemonTypeColor)
-                    .padding(innerPadding),
-            contentAlignment = Alignment.Center,
+                    .padding(innerPadding)
+                    .background(Colors.pokedexRed),
         ) {
             when (val currentState = detailsState) {
-                is DroidDetailsUiState.Loading -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        CircularProgressIndicator(color = Color.White)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Loading Pokemon details...",
-                            fontSize = 16.sp,
-                            color = Color.White,
-                        )
-                    }
-                }
-                is DroidDetailsUiState.Success -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        if (currentState.isOfflineData) {
-                            Surface(
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = Spacing.MEDIUM.dp, vertical = Spacing.SMALL.dp),
-                                color = Color.Black.copy(alpha = 0.28f),
-                                shape = RoundedCornerShape(Spacing.SMALL.dp),
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.offline_data_banner),
-                                    color = Color.White,
-                                    fontSize = 14.sp,
-                                    modifier = Modifier.padding(Spacing.MEDIUM.dp),
-                                )
-                            }
-                        }
-                        Text(
-                            text = currentState.pokemonDetails.name.replaceFirstChar { char -> char.uppercase() },
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Pokemon #${currentState.pokemonDetails.id}",
-                            fontSize = 18.sp,
-                            color = Color.White,
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Height: ${currentState.pokemonDetails.heightMeters}",
-                            fontSize = 16.sp,
-                            color = Color.White,
-                        )
-                        Text(
-                            text = "Weight: ${currentState.pokemonDetails.weightKg}",
-                            fontSize = 16.sp,
-                            color = Color.White,
-                        )
-                        Text(
-                            text = "Base Experience: ${currentState.pokemonDetails.baseExperience}",
-                            fontSize = 16.sp,
-                            color = Color.White,
-                        )
-                    }
-                }
-                is DroidDetailsUiState.Error -> {
+                is DroidDetailsUiState.Loading -> DetailsLoadingContent()
+                is DroidDetailsUiState.Success ->
+                    DetailsSuccessContent(
+                        details = currentState.pokemonDetails,
+                        isOfflineData = currentState.isOfflineData,
+                    )
+                is DroidDetailsUiState.Error ->
                     DroidErrorComponent(
                         title = stringResource(id = currentState.info.titleRes),
                         message = stringResource(id = currentState.info.messageRes),
@@ -151,11 +117,161 @@ fun DroidDetailsScreen(
                             },
                         onRetryClick = { viewModel.onRetry(pokemonId) },
                     )
-                }
             }
         }
     }
 }
+
+@Composable
+private fun DetailsLoadingContent() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator(color = Colors.white)
+    }
+}
+
+@Composable
+private fun DetailsSuccessContent(
+    details: PokemonDetails,
+    isOfflineData: Boolean,
+) {
+    val typeColor = DroidPokemonTypeColor.getPokemonColor(details.primaryType ?: "normal")
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = Spacing.LARGE.dp)
+                .verticalScroll(scrollState),
+    ) {
+        if (isOfflineData) {
+            OfflineBanner()
+            Spacer(modifier = Modifier.height(Spacing.SMALL.dp))
+        }
+
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(topStart = Spacing.MEDIUM.dp, topEnd = Spacing.MEDIUM.dp),
+            color = Colors.surfaceCream,
+            shadowElevation = 4.dp,
+        ) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(Spacing.LARGE.dp),
+            ) {
+                PokemonHeroSection(
+                    pokemonId = details.id,
+                    imageUrl = details.officialArtworkUrl,
+                    backgroundColor = typeColor.secondary,
+                )
+
+                Spacer(modifier = Modifier.height(Spacing.LARGE.dp))
+
+                Text(
+                    text = details.name.uppercase(Locale.getDefault()),
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Colors.onSurface,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center,
+                )
+
+                details.genus?.let { genus ->
+                    Spacer(modifier = Modifier.height(Spacing.XSMALL.dp))
+                    Text(
+                        text = genus,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Colors.onSurfaceVariant,
+                        fontSize = 18.sp,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+
+                if (details.types.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(Spacing.MEDIUM.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        details.types.forEachIndexed { index, type ->
+                            if (index > 0) {
+                                Spacer(modifier = Modifier.padding(horizontal = Spacing.SMALL.dp))
+                            }
+                            TypePillTag(type = type)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(Spacing.LARGE.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.MEDIUM.dp),
+                ) {
+                    StatInfoCard(
+                        label = "HEIGHT",
+                        value = formatHeight(details.heightMeters),
+                        icon = Icons.Outlined.Straighten,
+                        iconTint = typeColor.primary,
+                        modifier = Modifier.weight(1f),
+                    )
+                    StatInfoCard(
+                        label = "WEIGHT",
+                        value = formatWeight(details.weightKg),
+                        icon = Icons.Outlined.FitnessCenter,
+                        iconTint = Colors.statDef,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(Spacing.LARGE.dp))
+
+                BaseStatsSection(stats = details.stats)
+
+                details.flavorText?.let { flavorText ->
+                    Spacer(modifier = Modifier.height(Spacing.LARGE.dp))
+                    DescriptionCard(description = flavorText)
+                }
+
+                if (details.evolutionChain.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(Spacing.LARGE.dp))
+                    EvolutionChainSection(
+                        stages = details.evolutionChain,
+                        currentPokemonId = details.id,
+                        primaryType = details.primaryType ?: "normal",
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(Spacing.XXLARGE.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun OfflineBanner() {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.Black.copy(alpha = 0.28f),
+        shape = RoundedCornerShape(Spacing.SMALL.dp),
+    ) {
+        Text(
+            text = stringResource(id = R.string.offline_data_banner),
+            color = Colors.white,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(Spacing.MEDIUM.dp),
+        )
+    }
+}
+
+private fun formatHeight(meters: Double): String = String.format(Locale.US, "%.1f M", meters)
+
+private fun formatWeight(kg: Double): String = String.format(Locale.US, "%.1f KG", kg)
 
 @Preview
 @Composable
