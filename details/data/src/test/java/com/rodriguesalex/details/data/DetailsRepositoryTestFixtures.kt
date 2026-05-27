@@ -4,7 +4,6 @@ import com.rodriguesalex.details.domain.model.AbilitySlot
 import com.rodriguesalex.details.domain.model.ApiResourceLink
 import com.rodriguesalex.details.domain.model.ChainLink
 import com.rodriguesalex.details.domain.model.EvolutionChainResponse
-import com.rodriguesalex.details.domain.model.FlavorTextEntry
 import com.rodriguesalex.details.domain.model.GenusEntry
 import com.rodriguesalex.details.domain.model.NamedResource
 import com.rodriguesalex.details.domain.model.PokemonDetailsResponse
@@ -48,8 +47,7 @@ internal fun testSpeciesResponse(): PokemonSpeciesResponse =
         evolution_chain = ApiResourceLink("https://pokeapi.co/api/v2/evolution-chain/1/"),
     )
 
-internal fun testSpeciesResponseWithoutEvolution(): PokemonSpeciesResponse =
-    testSpeciesResponse().copy(evolution_chain = null)
+internal fun testSpeciesResponseWithoutEvolution(): PokemonSpeciesResponse = testSpeciesResponse().copy(evolution_chain = null)
 
 internal fun testEvolutionChainResponse(): EvolutionChainResponse =
     EvolutionChainResponse(
