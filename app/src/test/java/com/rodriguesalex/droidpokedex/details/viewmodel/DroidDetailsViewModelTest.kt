@@ -110,7 +110,7 @@ class DroidDetailsViewModelTest {
             val details = minimalPokemonDetails()
             var callCount = 0
             coEvery { getPokeDetailsUseCase.invoke(GetPokeDetailsUseCase.Params(id = 1)) } answers {
-                if (callCount++ == 0) throw RuntimeException("fail") else DetailsFetchOutcome(details, DetailsRemoteSource.NETWORK)
+                if (callCount++ == 0) error("fail") else DetailsFetchOutcome(details, DetailsRemoteSource.NETWORK)
             }
 
             viewModel = DroidDetailsViewModel(getPokeDetailsUseCase)

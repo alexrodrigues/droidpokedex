@@ -14,7 +14,5 @@
 .cxx
 local.properties
 
-# RAG indexer
-rag/chroma_db/
-rag/venv/
-rag/__pycache__/
+# RAG system
+/rag/

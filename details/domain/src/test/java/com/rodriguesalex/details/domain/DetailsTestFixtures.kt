@@ -79,8 +79,7 @@ fun bulbasaurSpeciesResponse(): PokemonSpeciesResponse =
             ApiResourceLink(url = "https://pokeapi.co/api/v2/evolution-chain/1/"),
     )
 
-fun bulbasaurSpeciesResponseWithoutEvolution(): PokemonSpeciesResponse =
-    bulbasaurSpeciesResponse().copy(evolution_chain = null)
+fun bulbasaurSpeciesResponseWithoutEvolution(): PokemonSpeciesResponse = bulbasaurSpeciesResponse().copy(evolution_chain = null)
 
 fun japaneseOnlySpeciesResponse(): PokemonSpeciesResponse =
     PokemonSpeciesResponse(
