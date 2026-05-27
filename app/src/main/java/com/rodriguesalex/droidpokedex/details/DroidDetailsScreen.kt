@@ -65,22 +65,23 @@ fun DroidDetailsScreen(
         viewModel.loadPokemonDetails(pokemonId)
     }
 
-    val topBarTitle =
-        when (val state = detailsState) {
-            is DroidDetailsUiState.Success -> {
-                val name =
-                    state.pokemonDetails.name.replaceFirstChar { char ->
-                        if (char.isLowerCase()) {
-                            char.titlecase(Locale.getDefault())
-                        } else {
-                            char.toString()
-                        }
-                    }
-                "$name Entry #${state.pokemonDetails.id.toString().padStart(3, '0')}"
-            }
-            else -> "Pokemon #$pokemonId"
-        }
+    val topBarTitle = detailsTopBarTitle(detailsState, pokemonId)
 
+    DroidDetailsScreenContent(
+        topBarTitle = topBarTitle,
+        state = detailsState,
+        onBackClick = onBackClick,
+        onRetry = { viewModel.onRetry(pokemonId) },
+    )
+}
+
+@Composable
+internal fun DroidDetailsScreenContent(
+    topBarTitle: String,
+    state: DroidDetailsUiState,
+    onBackClick: () -> Unit,
+    onRetry: () -> Unit,
+) {
     Scaffold(
         containerColor = Colors.pokedexRed,
         topBar = {
@@ -97,7 +98,7 @@ fun DroidDetailsScreen(
                     .padding(innerPadding)
                     .background(Colors.pokedexRed),
         ) {
-            when (val currentState = detailsState) {
+            when (val currentState = state) {
                 is DroidDetailsUiState.Loading -> DetailsLoadingContent()
                 is DroidDetailsUiState.Success ->
                     DetailsSuccessContent(
@@ -115,12 +116,31 @@ fun DroidDetailsScreen(
                                     else -> stringResource(id = resId)
                                 }
                             },
-                        onRetryClick = { viewModel.onRetry(pokemonId) },
+                        onRetryClick = onRetry,
                     )
             }
         }
     }
 }
+
+internal fun detailsTopBarTitle(
+    state: DroidDetailsUiState,
+    pokemonId: String,
+): String =
+    when (state) {
+        is DroidDetailsUiState.Success -> {
+            val name =
+                state.pokemonDetails.name.replaceFirstChar { char ->
+                    if (char.isLowerCase()) {
+                        char.titlecase(Locale.getDefault())
+                    } else {
+                        char.toString()
+                    }
+                }
+            "$name Entry #${state.pokemonDetails.id.toString().padStart(3, '0')}"
+        }
+        else -> "Pokemon #$pokemonId"
+    }
 
 @Composable
 private fun DetailsLoadingContent() {
@@ -276,8 +296,64 @@ private fun formatWeight(kg: Double): String = String.format(Locale.US, "%.1f KG
 @Preview
 @Composable
 fun DetailsScreenPreview() {
-    DroidDetailsScreen(
-        pokemonId = "1",
+    val details = previewBulbasaurDetails()
+    DroidDetailsScreenContent(
+        topBarTitle = detailsTopBarTitle(DroidDetailsUiState.Success(details), "1"),
+        state = DroidDetailsUiState.Success(details),
         onBackClick = {},
+        onRetry = {},
     )
 }
+
+private fun previewBulbasaurDetails(): PokemonDetails =
+    PokemonDetails(
+        id = 1,
+        name = "bulbasaur",
+        baseExperience = 64,
+        heightMeters = 0.7,
+        weightKg = 6.9,
+        types = listOf("grass", "poison"),
+        abilities = emptyList(),
+        stats =
+            mapOf(
+                "hp" to 45,
+                "attack" to 49,
+                "defense" to 49,
+                "special-attack" to 65,
+                "special-defense" to 65,
+                "speed" to 45,
+            ),
+        sprites =
+            PokemonDetails.Sprites(
+                frontDefault = null,
+                backDefault = null,
+                frontShiny = null,
+                backShiny = null,
+            ),
+        officialArtworkUrl =
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
+        genus = "The Seed Pokémon",
+        flavorText =
+            "For some time after its birth, it grows by gaining nourishment from the seed on its back.",
+        evolutionChain =
+            listOf(
+                PokemonDetails.EvolutionStage(
+                    id = 1,
+                    name = "bulbasaur",
+                    spriteUrl =
+                        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
+                ),
+                PokemonDetails.EvolutionStage(
+                    id = 2,
+                    name = "ivysaur",
+                    spriteUrl =
+                        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/2.png",
+                ),
+                PokemonDetails.EvolutionStage(
+                    id = 3,
+                    name = "venusaur",
+                    spriteUrl =
+                        "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/3.png",
+                ),
+            ),
+    )

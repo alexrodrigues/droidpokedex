@@ -110,7 +110,7 @@ Reusable Compose primitives and **@Preview**-backed components live under [`app/
 | Domain | JUnit, MockK, coroutines test | [`SearchPokemonUseCaseTest`](home/domain/src/test/java/com/rodriguesalex/domain/SearchPokemonUseCaseTest.kt), [`GetPokeHomeUseCaseTest`](home/domain/src/test/java/com/rodriguesalex/domain/GetPokeHomeUseCaseTest.kt) |
 | Data | JUnit, MockK, coroutines test | [`PokeHomeRepositoryImplTest`](home/data/src/test/java/com/rodriguesalex/data/PokeHomeRepositoryImplTest.kt) |
 | Presentation | JUnit, MockK, `StandardTestDispatcher` | [`DroidHomeViewModelTest`](app/src/test/java/com/rodriguesalex/droidpokedex/home/viewmodel/DroidHomeViewModelTest.kt) |
-| UI snapshots | Paparazzi | [`DroidHomeCellPaparazziTest`](app/src/test/java/com/rodriguesalex/droidpokedex/DroidHomeCellPaparazziTest.kt), [`SimplePaparazziTest`](app/src/test/java/com/rodriguesalex/droidpokedex/SimplePaparazziTest.kt) |
+| UI snapshots | Paparazzi | [`DroidHomeCellPaparazziTest`](app/src/test/java/com/rodriguesalex/droidpokedex/DroidHomeCellPaparazziTest.kt), [`DroidDetailsPaparazziTest`](app/src/test/java/com/rodriguesalex/droidpokedex/details/DroidDetailsPaparazziTest.kt), [`SimplePaparazziTest`](app/src/test/java/com/rodriguesalex/droidpokedex/SimplePaparazziTest.kt) |
 | On-device UI | Compose UI test dependencies on `:app` | `androidTest` with `ui-test-junit4` (run on emulator/device) |
 
 ## Code quality
