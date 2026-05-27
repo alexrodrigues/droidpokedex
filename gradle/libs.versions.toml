@@ -17,6 +17,7 @@ mockk = "1.13.5"
 coroutines-test = "1.7.3"
 testng = "6.9.6"
 paparazzi = "2.0.0-alpha02"
+jacoco = "0.8.11"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

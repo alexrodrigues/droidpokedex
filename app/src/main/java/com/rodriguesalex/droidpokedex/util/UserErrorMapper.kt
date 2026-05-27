@@ -6,9 +6,9 @@ import retrofit2.HttpException
 import java.io.IOException
 
 data class ErrorInfo(
-    @StringRes val titleRes: Int,
-    @StringRes val messageRes: Int,
-    @StringRes val detailRes: Int? = null,
+    @param:StringRes val titleRes: Int,
+    @param:StringRes val messageRes: Int,
+    @param:StringRes val detailRes: Int? = null,
     val detailArg: Any? = null,
 )
 
