@@ -20,6 +20,7 @@ data class PokemonDetails(
         val name: String,
         val spriteUrl: String,
     )
+
     data class Ability(
         val name: String,
         val hidden: Boolean,
