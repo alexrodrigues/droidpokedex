@@ -1,0 +1,7 @@
+appId: com.rodriguesalex.droidpokedex
+---
+- launchApp
+- assertVisible: "Pokemon"
+- tapOn:
+    index: 0
+- pressKey: back
