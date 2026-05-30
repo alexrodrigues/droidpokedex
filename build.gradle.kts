@@ -57,7 +57,8 @@ subprojects {
 
 tasks.register<JacocoReport>("jacocoFullReport") {
     group = "verification"
-    description = "Generate unified JaCoCo coverage report for all modules"
+    description =
+        "Generate unified JaCoCo coverage report (unit tests + Paparazzi snapshot tests in :app)"
 
     val coverageModules = listOf(
         "app",
@@ -67,6 +68,7 @@ tasks.register<JacocoReport>("jacocoFullReport") {
         "home:data",
     )
 
+    // Paparazzi tests run as part of :app:testDebugUnitTest; their execution data is included below.
     dependsOn(coverageModules.map { ":$it:testDebugUnitTest" })
 
     val excludePatterns = listOf(
@@ -82,10 +84,8 @@ tasks.register<JacocoReport>("jacocoFullReport") {
         "**/Hilt_*",
         "**/*Hilt*",
         "**/*_Impl*",
-        "**/designsystem/**",
         "**/navigation/**",
         "**/ui/theme/**",
-        "**/*Screen*",
         "**/*Preview*",
     )
 
