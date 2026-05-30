@@ -8,13 +8,17 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import java.io.IOException
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.fail
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
+import retrofit2.HttpException
 
 class PokeDetailsRepositoryImplTest {
     @MockK
@@ -123,6 +127,40 @@ class PokeDetailsRepositoryImplTest {
             assertEquals(DetailsRemoteSource.CACHE, second.source)
             assertEquals(first.value.pokemon.name, second.value.pokemon.name)
             assertNotNull(second.value.species)
+        }
+
+    @Test
+    fun `fetchPokemonDetails returns cache after HttpException`() =
+        runTest {
+            val pokemon = testPokemonResponse()
+            val species = testSpeciesResponse()
+            val evolution = testEvolutionChainResponse()
+            val httpException = mockk<HttpException>()
+
+            coEvery { pokeDetailsService.fetchPokemonDetails(1) } returns pokemon
+            coEvery { pokeDetailsService.fetchPokemonSpecies(1) } returns species
+            coEvery { pokeDetailsService.fetchEvolutionChain(any()) } returns evolution
+
+            repository.fetchPokemonDetails(1)
+
+            coEvery { pokeDetailsService.fetchPokemonDetails(1) } throws httpException
+
+            val cached = repository.fetchPokemonDetails(1)
+
+            assertEquals(DetailsRemoteSource.CACHE, cached.source)
+        }
+
+    @Test
+    fun `fetchPokemonDetails rethrows CancellationException`() =
+        runTest {
+            coEvery { pokeDetailsService.fetchPokemonDetails(1) } throws CancellationException()
+
+            try {
+                repository.fetchPokemonDetails(1)
+                fail("Expected CancellationException")
+            } catch (e: CancellationException) {
+                assertNotNull(e)
+            }
         }
 
     @Test

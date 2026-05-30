@@ -14,9 +14,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import java.io.IOException
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.fail
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
+import retrofit2.HttpException
 
 class PokeHomeRepositoryImplTest {
     @MockK
@@ -161,5 +164,182 @@ class PokeHomeRepositoryImplTest {
             } catch (e: NoSuchElementException) {
                 assertEquals("Pokemon not found", e.message)
             }
+        }
+
+    @Test
+    fun `searchPokemon returns cache after IOException following successful search`() =
+        runTest {
+            val pokemonName = "Pikachu"
+            val cachedDetails =
+                mockk<PokemonListDetailedItemResponse>(relaxed = true) {
+                    every { name } returns "Pikachu"
+                }
+
+            var searchCount = 0
+            coEvery { pokeHomeService.searchPokemon(pokemonName) } answers {
+                when (searchCount++) {
+                    0 -> cachedDetails
+                    else -> throw IOException("offline")
+                }
+            }
+
+            val first = pokeHomeRepository.searchPokemon(pokemonName)
+            assertEquals(RemoteDataSource.NETWORK, first.source)
+
+            val second = pokeHomeRepository.searchPokemon(pokemonName)
+            assertEquals(RemoteDataSource.CACHE, second.source)
+            assertEquals("Pikachu", second.value.name)
+        }
+
+    @Test
+    fun `searchPokemon returns cache after HttpException following successful search`() =
+        runTest {
+            val pokemonName = "Pikachu"
+            val cachedDetails =
+                mockk<PokemonListDetailedItemResponse>(relaxed = true) {
+                    every { name } returns "Pikachu"
+                }
+            val httpException = mockk<HttpException>()
+
+            var searchCount = 0
+            coEvery { pokeHomeService.searchPokemon(pokemonName) } answers {
+                when (searchCount++) {
+                    0 -> cachedDetails
+                    else -> throw httpException
+                }
+            }
+
+            pokeHomeRepository.searchPokemon(pokemonName)
+            val second = pokeHomeRepository.searchPokemon(pokemonName)
+
+            assertEquals(RemoteDataSource.CACHE, second.source)
+        }
+
+    @Test
+    fun `fetchPokemonHome throws when cache miss on failure`() =
+        runTest {
+            coEvery { pokeHomeService.fetchPokemonList(10, 99) } throws IOException("offline")
+
+            try {
+                pokeHomeRepository.fetchPokemonHome(10, 99)
+                fail("Expected IOException")
+            } catch (e: IOException) {
+                assertEquals("offline", e.message)
+            }
+        }
+
+    @Test
+    fun `fetchPokemonHome returns cache when HttpException after successful load`() =
+        runTest {
+            val limit = 10
+            val offset = 0
+            val pikachuDetails =
+                mockk<PokemonListDetailedItemResponse> {
+                    every { name } returns "Pikachu"
+                }
+            val pokemonListResponse =
+                PokemonListResponse(
+                    results = listOf(PokemonListItemResponse("Pikachu", "https://pokeapi.co/api/v2/pokemon/1/")),
+                    count = 1,
+                    next = null,
+                    previous = null,
+                )
+            val httpException = mockk<HttpException>()
+
+            coEvery { pokeHomeService.fetchHomePokemonDetail(any()) } returns pikachuDetails
+
+            var listFetchCount = 0
+            coEvery { pokeHomeService.fetchPokemonList(limit, offset) } answers {
+                when (listFetchCount++) {
+                    0 -> pokemonListResponse
+                    else -> throw httpException
+                }
+            }
+
+            pokeHomeRepository.fetchPokemonHome(limit, offset)
+            val second = pokeHomeRepository.fetchPokemonHome(limit, offset)
+
+            assertEquals(RemoteDataSource.CACHE, second.source)
+        }
+
+    @Test
+    fun `searchPokemon normalizes cache key with trim and lowercase`() =
+        runTest {
+            val cachedDetails =
+                mockk<PokemonListDetailedItemResponse>(relaxed = true) {
+                    every { name } returns "Pikachu"
+                }
+
+            coEvery { pokeHomeService.searchPokemon("  PiKaChu  ") } returns cachedDetails
+            coEvery { pokeHomeService.searchPokemon("pikachu") } throws IOException("offline")
+
+            pokeHomeRepository.searchPokemon("  PiKaChu  ")
+            val cached = pokeHomeRepository.searchPokemon("pikachu")
+
+            assertEquals(RemoteDataSource.CACHE, cached.source)
+        }
+
+    @Test
+    fun `fetchPokemonHome rethrows CancellationException`() =
+        runTest {
+            coEvery { pokeHomeService.fetchPokemonList(10, 0) } throws CancellationException()
+
+            try {
+                pokeHomeRepository.fetchPokemonHome(10, 0)
+                fail("Expected CancellationException")
+            } catch (e: CancellationException) {
+                assertEquals(CancellationException::class.java, e.javaClass)
+            }
+        }
+
+    @Test
+    fun `searchPokemon rethrows CancellationException`() =
+        runTest {
+            coEvery { pokeHomeService.searchPokemon("Pikachu") } throws CancellationException()
+
+            try {
+                pokeHomeRepository.searchPokemon("Pikachu")
+                fail("Expected CancellationException")
+            } catch (e: CancellationException) {
+                assertEquals(CancellationException::class.java, e.javaClass)
+            }
+        }
+
+    @Test
+    fun `fetchPokemonHome uses separate cache keys per pagination offset`() =
+        runTest {
+            val pageZeroDetails =
+                mockk<PokemonListDetailedItemResponse> {
+                    every { name } returns "Pikachu"
+                }
+            val pageOneDetails =
+                mockk<PokemonListDetailedItemResponse> {
+                    every { name } returns "Bulbasaur"
+                }
+
+            coEvery { pokeHomeService.fetchPokemonList(10, 0) } returns
+                PokemonListResponse(
+                    results = listOf(PokemonListItemResponse("Pikachu", "https://pokeapi.co/api/v2/pokemon/1/")),
+                    count = 2,
+                    next = null,
+                    previous = null,
+                )
+            coEvery { pokeHomeService.fetchPokemonList(10, 10) } returns
+                PokemonListResponse(
+                    results = listOf(PokemonListItemResponse("Bulbasaur", "https://pokeapi.co/api/v2/pokemon/2/")),
+                    count = 2,
+                    next = null,
+                    previous = null,
+                )
+            coEvery { pokeHomeService.fetchHomePokemonDetail("https://pokeapi.co/api/v2/pokemon/1/") } returns
+                pageZeroDetails
+            coEvery { pokeHomeService.fetchHomePokemonDetail("https://pokeapi.co/api/v2/pokemon/2/") } returns
+                pageOneDetails
+
+            val firstPage = pokeHomeRepository.fetchPokemonHome(10, 0)
+            val secondPage = pokeHomeRepository.fetchPokemonHome(10, 10)
+
+            assertEquals("Pikachu", firstPage.value.detailedResults!!.first().name)
+            assertEquals("Bulbasaur", secondPage.value.detailedResults!!.first().name)
         }
 }

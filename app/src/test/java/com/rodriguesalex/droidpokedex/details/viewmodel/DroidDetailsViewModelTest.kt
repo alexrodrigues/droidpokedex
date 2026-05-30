@@ -8,7 +8,9 @@ import com.rodriguesalex.droidpokedex.R
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -22,6 +24,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import retrofit2.HttpException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DroidDetailsViewModelTest {
@@ -139,6 +142,24 @@ class DroidDetailsViewModelTest {
             testDispatcher.scheduler.advanceUntilIdle()
 
             coVerify(exactly = 1) { getPokeDetailsUseCase.invoke(GetPokeDetailsUseCase.Params(id = 1)) }
+        }
+
+    @Test
+    fun `loadPokemonDetails maps HttpException to server error with status code`() =
+        runTest {
+            coEvery { getPokeDetailsUseCase.invoke(GetPokeDetailsUseCase.Params(id = 1)) } throws
+                mockk<HttpException> {
+                    every { code() } returns 502
+                }
+
+            viewModel = DroidDetailsViewModel(getPokeDetailsUseCase)
+            viewModel.loadPokemonDetails("1")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val state = viewModel.detailsStateFlow.value as DroidDetailsUiState.Error
+            assertEquals(R.string.error_server_title, state.info.titleRes)
+            assertEquals(R.string.error_server_detail, state.info.detailRes)
+            assertEquals(502, state.info.detailArg)
         }
 }
 

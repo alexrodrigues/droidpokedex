@@ -87,6 +87,9 @@ tasks.register<JacocoReport>("jacocoFullReport") {
         "**/navigation/**",
         "**/ui/theme/**",
         "**/*Preview*",
+        "**/*ComposableSingletons*",
+        "**/DroidApp*",
+        "**/MainActivity*",
     )
 
     val srcDirs = coverageModules.map { modulePath ->

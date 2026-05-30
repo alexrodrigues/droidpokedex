@@ -130,6 +130,36 @@ fun bulbasaurEvolutionChainResponse(): EvolutionChainResponse =
             ),
     )
 
+fun branchedEvolutionChainResponse(): EvolutionChainResponse =
+    EvolutionChainResponse(
+        id = 2,
+        chain =
+            ChainLink(
+                species =
+                    NamedResource(
+                        name = "eevee",
+                        url = "https://pokeapi.co/api/v2/pokemon-species/133/",
+                    ),
+                evolves_to =
+                    listOf(
+                        ChainLink(
+                            species =
+                                NamedResource(
+                                    name = "vaporeon",
+                                    url = "https://pokeapi.co/api/v2/pokemon-species/134/",
+                                ),
+                        ),
+                        ChainLink(
+                            species =
+                                NamedResource(
+                                    name = "jolteon",
+                                    url = "https://pokeapi.co/api/v2/pokemon-species/135/",
+                                ),
+                        ),
+                    ),
+            ),
+    )
+
 fun bulbasaurAggregate(): PokemonDetailsAggregate =
     PokemonDetailsAggregate(
         pokemon = bulbasaurPokemonResponse(),

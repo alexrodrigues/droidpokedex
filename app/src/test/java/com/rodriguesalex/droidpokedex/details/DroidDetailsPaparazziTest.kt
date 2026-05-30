@@ -55,6 +55,73 @@ class DroidDetailsPaparazziTest {
     }
 
     @Test
+    fun details_success_charmander() {
+        val details = charmanderDetails()
+        paparazzi.snapshot {
+            DroidDetailsScreenContent(
+                topBarTitle = detailsTopBarTitle(DroidDetailsUiState.Success(details), "4"),
+                state = DroidDetailsUiState.Success(details),
+                onBackClick = {},
+                onRetry = {},
+            )
+        }
+    }
+
+    @Test
+    fun details_error_server() {
+        paparazzi.snapshot {
+            DroidDetailsScreenContent(
+                topBarTitle = "Pokemon #1",
+                state =
+                    DroidDetailsUiState.Error(
+                        info =
+                            ErrorInfo(
+                                titleRes = R.string.error_server_title,
+                                messageRes = R.string.error_server_message,
+                                detailRes = R.string.error_server_detail,
+                                detailArg = 500,
+                            ),
+                    ),
+                onBackClick = {},
+                onRetry = {},
+            )
+        }
+    }
+
+    @Test
+    fun details_success_minimal() {
+        val details = minimalDetails()
+        paparazzi.snapshot {
+            DroidDetailsScreenContent(
+                topBarTitle = detailsTopBarTitle(DroidDetailsUiState.Success(details), "201"),
+                state = DroidDetailsUiState.Success(details),
+                onBackClick = {},
+                onRetry = {},
+            )
+        }
+    }
+
+    @Test
+    fun details_error_invalid_id() {
+        paparazzi.snapshot {
+            DroidDetailsScreenContent(
+                topBarTitle = "Pokemon #0",
+                state =
+                    DroidDetailsUiState.Error(
+                        info =
+                            ErrorInfo(
+                                titleRes = R.string.error_invalid_id_title,
+                                messageRes = R.string.error_invalid_id_message,
+                                detailRes = R.string.error_invalid_id_message,
+                            ),
+                    ),
+                onBackClick = {},
+                onRetry = {},
+            )
+        }
+    }
+
+    @Test
     fun details_error_network() {
         paparazzi.snapshot {
             DroidDetailsScreenContent(

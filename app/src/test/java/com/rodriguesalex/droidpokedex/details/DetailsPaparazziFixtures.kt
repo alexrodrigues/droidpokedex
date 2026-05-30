@@ -72,6 +72,27 @@ fun charmanderDetails(): PokemonDetails =
         evolutionChain = emptyList(),
     )
 
+fun minimalDetails(): PokemonDetails =
+    PokemonDetails(
+        id = 201,
+        name = "unown",
+        baseExperience = 40,
+        heightMeters = 0.5,
+        weightKg = 5.0,
+        types = emptyList(),
+        abilities = emptyList(),
+        stats =
+            mapOf(
+                "hp" to 48,
+                "attack" to 72,
+            ),
+        sprites = emptySprites(),
+        officialArtworkUrl = officialArtworkUrl(201),
+        genus = null,
+        flavorText = null,
+        evolutionChain = emptyList(),
+    )
+
 private fun evolutionStage(
     id: Int,
     name: String,

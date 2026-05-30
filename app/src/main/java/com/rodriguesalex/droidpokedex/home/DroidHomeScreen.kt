@@ -34,13 +34,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.rodriguesalex.droidpokedex.R
 import com.rodriguesalex.droidpokedex.designsystem.components.DroidErrorComponent
-import com.rodriguesalex.droidpokedex.designsystem.components.DroidPokeHeader
+import com.rodriguesalex.droidpokedex.designsystem.components.DroidHomeCell
 import com.rodriguesalex.droidpokedex.designsystem.components.DroidPaginationLoadingIndicator
+import com.rodriguesalex.droidpokedex.designsystem.components.DroidPokeHeader
 import com.rodriguesalex.droidpokedex.designsystem.tokens.Colors
 import com.rodriguesalex.droidpokedex.designsystem.tokens.Spacing
-import com.rodriguesalex.droidpokedex.designsystem.components.DroidHomeCell
-import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeViewModel
 import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeUiState
+import com.rodriguesalex.droidpokedex.home.viewmodel.DroidHomeViewModel
 
 @Composable
 @Suppress("LongMethod", "MagicNumber")
@@ -52,10 +52,31 @@ internal fun DroidHomeScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
 
+    DroidHomeScreenContent(
+        state = homePageState,
+        searchQuery = searchQuery,
+        isLoading = isLoading,
+        onSearchQueryChanged = viewModel::onSearchQueryChanged,
+        onPokemonClick = onPokemonClick,
+        onRetry = viewModel::onRetry,
+        onLoadMore = viewModel::loadMorePokemons,
+    )
+}
+
+@Composable
+@Suppress("LongMethod", "MagicNumber")
+internal fun DroidHomeScreenContent(
+    state: DroidHomeUiState,
+    searchQuery: String,
+    isLoading: Boolean,
+    onSearchQueryChanged: (String) -> Unit,
+    onPokemonClick: (String) -> Unit,
+    onRetry: () -> Unit,
+    onLoadMore: () -> Unit,
+) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
     ) { innerPadding ->
-
         Column(
             modifier =
                 Modifier
@@ -69,25 +90,22 @@ internal fun DroidHomeScreen(
 
             PokeSearchBar(
                 searchQuery = searchQuery,
-                onSearchQueryChanged = viewModel::onSearchQueryChanged,
+                onSearchQueryChanged = onSearchQueryChanged,
             )
 
-            when (homePageState) {
+            when (state) {
                 is DroidHomeUiState.Error -> {
-                    val err = homePageState as DroidHomeUiState.Error
                     DroidErrorComponent(
-                        title = stringResource(id = err.info.titleRes),
-                        message = stringResource(id = err.info.messageRes),
+                        title = stringResource(id = state.info.titleRes),
+                        message = stringResource(id = state.info.messageRes),
                         detail =
-                            err.info.detailRes?.let { resId ->
-                                when (val arg = err.info.detailArg) {
+                            state.info.detailRes?.let { resId ->
+                                when (val arg = state.info.detailArg) {
                                     is Int -> stringResource(id = resId, arg)
                                     else -> stringResource(id = resId)
                                 }
                             },
-                        onRetryClick = {
-                            viewModel.onRetry()
-                        },
+                        onRetryClick = onRetry,
                     )
                 }
 
@@ -105,11 +123,10 @@ internal fun DroidHomeScreen(
                 }
 
                 is DroidHomeUiState.Success -> {
-                    val successState = homePageState as DroidHomeUiState.Success
-                    val pokemons = successState.pokemons
+                    val pokemons = state.pokemons
 
                     LazyColumn {
-                        if (successState.isOfflineData) {
+                        if (state.isOfflineData) {
                             item {
                                 OfflineDataBanner(
                                     modifier =
@@ -134,10 +151,8 @@ internal fun DroidHomeScreen(
                                 },
                             )
 
-                            val isSearching = successState.isSearching
-
-                            if (index >= pokemons.size - 3 && !isLoading && !isSearching) {
-                                viewModel.loadMorePokemons()
+                            if (index >= pokemons.size - 3 && !isLoading && !state.isSearching) {
+                                onLoadMore()
                             }
                         }
 
