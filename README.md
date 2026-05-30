@@ -35,11 +35,19 @@ cd droidpokedex
 ./gradlew :app:assembleDebug
 ```
 
-Run unit tests (includes Paparazzi snapshot tests under `app/src/test`, which compare against checked-in golden images):
+Run unit tests (includes **Paparazzi** snapshot tests under `app/src/test`, which compare against checked-in golden images):
 
 ```sh
 ./gradlew test
 ```
+
+Generate a unified **JaCoCo** report (domain/data ViewModel tests **and** Compose UI exercised by Paparazzi in `:app`):
+
+```sh
+./gradlew jacocoFullReport
+```
+
+Open `build/reports/jacoco/html/index.html` for the HTML report. CI runs the same report on every PR and posts coverage from `build/reports/jacoco/jacoco.xml`.
 
 After intentional UI changes, record new Paparazzi baselines:
 
@@ -52,7 +60,7 @@ After intentional UI changes, record new Paparazzi baselines:
 [GitHub Actions](https://docs.github.com/en/actions) runs on every **push** and **pull request** targeting **`main`**. The workflow is defined in [`.github/workflows/ci.yml`](.github/workflows/ci.yml): it sets up **Temurin JDK 17**, the **Android SDK** (`android-actions/setup-android`), Gradle caching (`gradle/actions/setup-gradle`), then runs **`assembleDebug`**, **`ktlintCheck`**, **`detekt`**, and **`test`** (Gradle may reorder tasks according to the task graph):
 
 ```sh
-./gradlew assembleDebug ktlintCheck detekt test --stacktrace -Dorg.gradle.java.home="$JAVA_HOME"
+./gradlew assembleDebug ktlintCheck detekt test jacocoFullReport --stacktrace -Dorg.gradle.java.home="$JAVA_HOME"
 ```
 
 The `-Dorg.gradle.java.home=…` flag matches CI’s JDK with the value from `actions/setup-java` and overrides the optional machine-specific `org.gradle.java.home` entry in [`gradle.properties`](gradle.properties) (for example a local Homebrew path). Instrumented tests on an emulator are not part of this workflow; run those locally when needed.
@@ -109,9 +117,11 @@ Reusable Compose primitives and **@Preview**-backed components live under [`app/
 |-------|----------|----------|
 | Domain | JUnit, MockK, coroutines test | [`SearchPokemonUseCaseTest`](home/domain/src/test/java/com/rodriguesalex/domain/SearchPokemonUseCaseTest.kt), [`GetPokeHomeUseCaseTest`](home/domain/src/test/java/com/rodriguesalex/domain/GetPokeHomeUseCaseTest.kt) |
 | Data | JUnit, MockK, coroutines test | [`PokeHomeRepositoryImplTest`](home/data/src/test/java/com/rodriguesalex/data/PokeHomeRepositoryImplTest.kt) |
-| Presentation | JUnit, MockK, `StandardTestDispatcher` | [`DroidHomeViewModelTest`](app/src/test/java/com/rodriguesalex/droidpokedex/home/viewmodel/DroidHomeViewModelTest.kt) |
-| UI snapshots | Paparazzi | [`DroidHomeCellPaparazziTest`](app/src/test/java/com/rodriguesalex/droidpokedex/DroidHomeCellPaparazziTest.kt), [`DroidDetailsPaparazziTest`](app/src/test/java/com/rodriguesalex/droidpokedex/details/DroidDetailsPaparazziTest.kt), [`SimplePaparazziTest`](app/src/test/java/com/rodriguesalex/droidpokedex/SimplePaparazziTest.kt) |
+| Presentation | JUnit, MockK, `StandardTestDispatcher` | [`DroidHomeViewModelTest`](app/src/test/java/com/rodriguesalex/droidpokedex/home/viewmodel/DroidHomeViewModelTest.kt), [`DroidDetailsViewModelTest`](app/src/test/java/com/rodriguesalex/droidpokedex/details/viewmodel/DroidDetailsViewModelTest.kt) |
+| UI (unit / JVM) | Paparazzi — runs in `testDebugUnitTest`, counts toward JaCoCo | [`DroidHomeCellPaparazziTest`](app/src/test/java/com/rodriguesalex/droidpokedex/DroidHomeCellPaparazziTest.kt), [`DroidDetailsPaparazziTest`](app/src/test/java/com/rodriguesalex/droidpokedex/details/DroidDetailsPaparazziTest.kt) |
 | On-device UI | Compose UI test dependencies on `:app` | `androidTest` with `ui-test-junit4` (run on emulator/device) |
+
+Paparazzi is not a separate test suite: it executes with **`./gradlew test`** and feeds the same **`jacocoFullReport`** as ViewModel and domain tests. Screens and design-system code covered by snapshot tests (for example [`DroidDetailsScreenContent`](app/src/main/java/com/rodriguesalex/droidpokedex/details/DroidDetailsScreen.kt)) are included in coverage metrics; `@Preview` composables remain excluded.
 
 ## Code quality
 
@@ -131,7 +141,7 @@ To run the default verification pipeline for all modules (unit tests, Android Li
 ## Limitations and possible extensions
 
 - **No durable offline store**: in-memory cache helps during a single run when the API fails; **persisting** lists or details (Room, DataStore, or similar) would improve true offline use and startup after process death. Coil still caches images for URLs on disk where configured.
-- **CI** on `main` runs **`assembleDebug`**, **`ktlintCheck`**, **`detekt`**, and **`test`** (see [Continuous integration](#continuous-integration)). The full **`./gradlew check`** graph (including Android Lint) is not run in CI unless you add it.
+- **CI** on `main` runs **`assembleDebug`**, **`ktlintCheck`**, **`detekt`**, **`test`** (including Paparazzi), and **`jacocoFullReport`** with PR coverage comments (see [Continuous integration](#continuous-integration)). The full **`./gradlew check`** graph (including Android Lint) is not run in CI unless you add it.
 - **Accessibility**: Compose previews help iteration, but a serious pass would add content descriptions, contrast checks, and TalkBack testing—not claimed here.
 
 ## Tech stack (summary)
