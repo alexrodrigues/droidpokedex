@@ -2,6 +2,174 @@
 
 [![CI](https://github.com/alexrodrigues/droidpokedex/actions/workflows/ci.yml/badge.svg)](https://github.com/alexrodrigues/droidpokedex/actions/workflows/ci.yml)
 
+## 🏗️ AI-Powered Quality Platform & CI/CD Infrastructure
+
+[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat&logo=githubactions&logoColor=white)](https://github.com/alexrodrigues/droidpokedex/actions/workflows/pr_pipeline.yml)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat&logo=python&logoColor=white)](scripts/quality_agent/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-gpt--4o-412991?style=flat&logo=openai&logoColor=white)](scripts/quality_agent/)
+[![Maestro](https://img.shields.io/badge/Maestro-UI_Tests-000000?style=flat)](maestro/)
+
+This repository serves as an **enterprise-grade sandbox** for a modern, **decoupled, and parallelized Quality Platform** designed to maximize **developer velocity (DevEx)** and leverage **Applied AI** across the pull-request lifecycle. The Android application below is the system under test; the infrastructure around it demonstrates how static analysis, automated testing, and intelligent agents can run concurrently without blocking the critical path.
+
+### Overview
+
+Quality feedback is delivered through a **PR Pipeline** ([`.github/workflows/pr_pipeline.yml`](.github/workflows/pr_pipeline.yml)) that treats linting, unit verification, and AI-assisted review as **independent concerns**. Each concern executes on its own runner, so developers receive faster, clearer signal on every change. Python-based quality agents live under [`scripts/quality_agent/`](scripts/quality_agent/) and integrate with GitHub’s PR APIs to push insights directly into the review thread.
+
+> **Tip:** Diagrams below use [Mermaid](https://mermaid.js.org/). They render as interactive charts on **GitHub.com**; some local Markdown previews may show only the source block.
+
+### Platform architecture
+
+High-level view of how the Android app, CI runners, and Applied-AI agents relate:
+
+```mermaid
+flowchart TB
+  subgraph dev [Developer]
+    PR[Open or update Pull Request]
+  end
+
+  subgraph gh [GitHub]
+    GHA[GitHub Actions orchestrator]
+    API[GitHub REST API]
+    Thread[PR review thread]
+  end
+
+  subgraph runners [Parallel runners on ubuntu-latest]
+    SA[static-analysis\nDetekt]
+    UT[unit-tests\nGradle + Paparazzi]
+    AR[ai-review\nPython]
+    UG[ai-ui-test-gen\nPython]
+  end
+
+  subgraph agents [scripts/quality_agent]
+    Reviewer[pr_reviewer.py]
+    MaestroGen[maestro_generator.py]
+  end
+
+  subgraph external [External services]
+    OpenAI[OpenAI API\ngpt-4o / gpt-4o-mini]
+  end
+
+  subgraph app [System under test]
+    Android[DroidPokedex\nKotlin / Compose / Hilt]
+  end
+
+  PR --> GHA
+  GHA --> SA
+  GHA --> UT
+  GHA --> AR
+  GHA --> UG
+  SA --> Android
+  UT --> Android
+  AR --> Reviewer
+  UG --> MaestroGen
+  Reviewer --> API
+  MaestroGen --> API
+  Reviewer --> OpenAI
+  MaestroGen --> OpenAI
+  API --> Thread
+```
+
+### Parallel pipeline architecture
+
+On every **pull request** opened, synchronized, or reopened against **`main`**, four **concurrent** jobs start on **separate runners**—the layout below matches what you see in the GitHub Actions **graph** view (not a single vertical step list):
+
+```mermaid
+flowchart TB
+  subgraph trigger [Trigger]
+    Event["pull_request\nopened | synchronize | reopened"]
+  end
+
+  subgraph critical [Critical path — always runs]
+    direction LR
+    SA["static-analysis\n./gradlew detekt"]
+    UT["unit-tests\n./gradlew testDebugUnitTest"]
+  end
+
+  subgraph optional [Applied AI — skipped without OPENAI_API_KEY]
+    direction LR
+    AR["ai-review\npr_reviewer.py"]
+    UG["ai-ui-test-gen\nmaestro_generator.py"]
+  end
+
+  Event --> SA
+  Event --> UT
+  Event --> AR
+  Event --> UG
+```
+
+| Job | Runtime | Responsibility | Blocks merge? |
+|-----|---------|----------------|---------------|
+| **`static-analysis`** | Gradle / JVM | Runs **Detekt** for automated Kotlin static analysis and code-quality linting. | Yes (when required by branch protection) |
+| **`unit-tests`** | Gradle / JVM | Executes **local unit tests** via Gradle (`testDebugUnitTest`), including JVM snapshot tests (Paparazzi). | Yes |
+| **`ai-review`** | Python agent | Intercepts the **Git diff**, analyzes architectural impact via OpenAI, **posts a PR comment** ([`pr_reviewer.py`](scripts/quality_agent/pr_reviewer.py)). | No — optional enrichment |
+| **`ai-ui-test-gen`** | Python agent | Detects **new UI surface area**, generates **Maestro YAML**, posts to the PR ([`maestro_generator.py`](scripts/quality_agent/maestro_generator.py)). Baseline: [`maestro/smoke_test.yaml`](maestro/smoke_test.yaml). | No — optional enrichment |
+
+**Workflow entry point:** [`.github/workflows/pr_pipeline.yml`](.github/workflows/pr_pipeline.yml)
+
+### AI agent flows
+
+How each Python agent moves data from the PR to a posted comment:
+
+```mermaid
+sequenceDiagram
+  participant GHA as GitHub Actions
+  participant Script as pr_reviewer.py
+  participant GH as GitHub API
+  participant LLM as OpenAI gpt-4o-mini
+
+  GHA->>Script: Run with GITHUB_TOKEN + OPENAI_API_KEY
+  Script->>Script: Read GITHUB_EVENT_PATH
+  Script->>GH: GET pull diff
+  GH-->>Script: Unified diff
+  Script->>LLM: Architectural impact + risks
+  LLM-->>Script: Markdown review
+  Script->>GH: POST issue comment on PR
+  GH-->>GHA: Comment visible on PR
+```
+
+```mermaid
+sequenceDiagram
+  participant GHA as GitHub Actions
+  participant Script as maestro_generator.py
+  participant GH as GitHub API
+  participant LLM as OpenAI gpt-4o
+
+  GHA->>Script: Run with GITHUB_TOKEN + OPENAI_API_KEY
+  Script->>GH: GET pull diff
+  GH-->>Script: Unified diff
+  Script->>LLM: Detect new UI, output Maestro YAML only
+  LLM-->>Script: YAML flow
+  Script->>GH: POST Auto-Generated Maestro test comment
+  GH-->>GHA: Runnable YAML in PR thread
+```
+
+### Resilience and defensive engineering
+
+AI jobs use **defense in depth**: workflow guards first, then script-level graceful exit. The **critical path** never depends on optional AI.
+
+```mermaid
+flowchart TD
+  Start[PR pipeline starts] --> Fork{Fork PR or\nno OPENAI_API_KEY?}
+
+  Fork -->|Yes| SkipJob[Skip ai-review and ai-ui-test-gen jobs]
+  Fork -->|No| RunAI[Run AI jobs]
+
+  SkipJob --> Critical[static-analysis + unit-tests run]
+  RunAI --> KeyCheck{Keys present\nin script?}
+
+  KeyCheck -->|No| Exit0[Print skip message\nexit code 0]
+  KeyCheck -->|Yes| CallOpenAI[Call OpenAI + post comment]
+
+  Exit0 --> Critical
+  CallOpenAI --> Critical
+
+  Critical --> Done[Pipeline succeeds\nwithout AI blocking build]
+```
+
+At the **workflow** level, `ai-review` and `ai-ui-test-gen` use `if: secrets.OPENAI_API_KEY != ''`, so they are **skipped entirely** when the secret is unavailable (e.g. **PRs from external forks**). At the **script** level, both agents re-check `OPENAI_API_KEY` and `GITHUB_TOKEN` and **exit 0** if missing—so the critical build path (Detekt + unit tests) never fails because optional AI is unavailable.
+
+---
+
 A Pokédex app for browsing and searching Pokémon using the public [PokéAPI](https://pokeapi.co/). It is built with **Kotlin**, **Jetpack Compose** (Material 3), **Navigation Compose**, and **Hilt** for dependency injection. The project follows a **multi-module, layered structure** (domain / data per feature, shared networking) inspired by Clean Architecture.
 
 ![Pokedex home and list experience](poke.png)
