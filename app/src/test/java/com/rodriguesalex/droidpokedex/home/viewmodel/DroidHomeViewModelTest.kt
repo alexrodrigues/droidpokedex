@@ -16,6 +16,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -402,7 +403,7 @@ class DroidHomeViewModelTest {
                 getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
             } answers {
                 if (callCount++ == 0) {
-                    throw RuntimeException("fail")
+                    throw IOException("fail")
                 } else {
                     FetchOutcome(
                         PokemonList(
