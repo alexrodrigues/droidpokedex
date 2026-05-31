@@ -30,9 +30,7 @@ fun DroidPrimaryButton(
                 bottomEnd = 8.dp,
                 bottomStart = 8.dp,
             ),
-        onClick = {
-            onClick.invoke()
-        },
+        onClick = onClick,
         content = {
             Text(text = text)
         },

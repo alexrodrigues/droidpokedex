@@ -289,9 +289,9 @@ private fun OfflineBanner() {
     }
 }
 
-private fun formatHeight(meters: Double): String = String.format(Locale.US, "%.1f M", meters)
+internal fun formatHeight(meters: Double): String = String.format(Locale.US, "%.1f M", meters)
 
-private fun formatWeight(kg: Double): String = String.format(Locale.US, "%.1f KG", kg)
+internal fun formatWeight(kg: Double): String = String.format(Locale.US, "%.1f KG", kg)
 
 @Preview
 @Composable

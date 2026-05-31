@@ -44,7 +44,8 @@ fun DroidHomeCell(
                 .clickable(
                     interactionSource = MutableInteractionSource(),
                     indication = rememberRipple(),
-                ) { onClick() },
+                    onClick = onClick,
+                ),
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(

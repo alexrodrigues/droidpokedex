@@ -1,6 +1,7 @@
 package com.rodriguesalex.droidpokedex.home.viewmodel
 
 import androidx.compose.ui.graphics.Color
+import com.rodriguesalex.droidpokedex.R
 import com.rodriguesalex.domain.model.FetchOutcome
 import com.rodriguesalex.domain.model.PokemonList
 import com.rodriguesalex.domain.model.PokemonListItem
@@ -12,7 +13,10 @@ import com.rodriguesalex.domain.usecase.GetPokeHomeUseCase
 import com.rodriguesalex.domain.usecase.SearchPokemonUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -25,6 +29,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import retrofit2.HttpException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DroidHomeViewModelTest {
@@ -339,6 +344,198 @@ class DroidHomeViewModelTest {
             assertTrue(currentState is DroidHomeUiState.Success)
             val successState = currentState as DroidHomeUiState.Success
             assertEquals(5, successState.pokemons.size) // 3 initial + 2 from second page
+        }
+
+    @Test
+    fun `loadMorePokemons sets isOfflineData when source is CACHE`() =
+        runTest {
+            val initialPokemonList =
+                PokemonList(
+                    count = 1,
+                    next = null,
+                    previous = null,
+                    results = listOf(createMockPokemon(1, "Pikachu")),
+                )
+
+            coEvery {
+                getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
+            } returns FetchOutcome(initialPokemonList, RemoteDataSource.CACHE)
+
+            viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val state = viewModel.homeStateFlow.value as DroidHomeUiState.Success
+            assertTrue(state.isOfflineData)
+        }
+
+    @Test
+    fun `search with cache source sets isOfflineData`() =
+        runTest {
+            coEvery {
+                getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
+            } returns
+                FetchOutcome(
+                    PokemonList(count = 0, next = null, previous = null, results = emptyList()),
+                    RemoteDataSource.NETWORK,
+                )
+
+            viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val searchedPokemon = createMockPokemon(25, "Pikachu")
+            coEvery {
+                searchPokemonUseCase.invoke(SearchPokemonUseCase.Params("Pikachu"))
+            } returns FetchOutcome(searchedPokemon, RemoteDataSource.CACHE)
+
+            viewModel.onSearchQueryChanged("Pikachu")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val state = viewModel.homeStateFlow.value as DroidHomeUiState.Success
+            assertTrue(state.isSearching)
+            assertTrue(state.isOfflineData)
+        }
+
+    @Test
+    fun `onRetry after error reloads home list and clears search query`() =
+        runTest {
+            var callCount = 0
+            coEvery {
+                getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
+            } answers {
+                if (callCount++ == 0) {
+                    throw IOException("fail")
+                } else {
+                    FetchOutcome(
+                        PokemonList(
+                            count = 1,
+                            next = null,
+                            previous = null,
+                            results = listOf(createMockPokemon(1, "Pikachu")),
+                        ),
+                        RemoteDataSource.NETWORK,
+                    )
+                }
+            }
+
+            viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertTrue(viewModel.homeStateFlow.value is DroidHomeUiState.Error)
+
+            viewModel.onRetry()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals("", viewModel.searchQuery.value)
+            assertTrue(viewModel.homeStateFlow.value is DroidHomeUiState.Success)
+        }
+
+    @Test
+    fun `loadMorePokemons maps HttpException to server error state`() =
+        runTest {
+            coEvery {
+                getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
+            } throws
+                mockk<HttpException> {
+                    every { code() } returns 503
+                }
+
+            viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val state = viewModel.homeStateFlow.value as DroidHomeUiState.Error
+            assertEquals(R.string.error_server_title, state.info.titleRes)
+        }
+
+    @Test
+    fun `loadMorePokemons preserves offline flag when appending cached page`() =
+        runTest {
+            val firstPage =
+                PokemonList(
+                    count = 2,
+                    next = "next",
+                    previous = null,
+                    results = mockPokemonList,
+                )
+            val secondPage =
+                PokemonList(
+                    count = 2,
+                    next = null,
+                    previous = "prev",
+                    results = mockPokemonList2,
+                )
+
+            coEvery {
+                getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
+            } returns FetchOutcome(firstPage, RemoteDataSource.CACHE)
+            coEvery {
+                getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 20))
+            } returns FetchOutcome(secondPage, RemoteDataSource.NETWORK)
+
+            viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.loadMorePokemons()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val state = viewModel.homeStateFlow.value as DroidHomeUiState.Success
+            assertEquals(5, state.pokemons.size)
+            assertTrue(state.isOfflineData)
+        }
+
+    @Test
+    fun `loadMorePokemons after initial success maps failure to error state`() =
+        runTest {
+            coEvery {
+                getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
+            } returns
+                FetchOutcome(
+                    PokemonList(
+                        count = 2,
+                        next = "next",
+                        previous = null,
+                        results = mockPokemonList,
+                    ),
+                    RemoteDataSource.NETWORK,
+                )
+            coEvery {
+                getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 20))
+            } throws RuntimeException("page two failed")
+
+            viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.loadMorePokemons()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertTrue(viewModel.homeStateFlow.value is DroidHomeUiState.Error)
+        }
+
+    @Test
+    fun `search maps HttpException to server error state`() =
+        runTest {
+            coEvery {
+                getHomeUseCase.invoke(GetPokeHomeUseCase.Params(limit = 20, offset = 0))
+            } returns
+                FetchOutcome(
+                    PokemonList(count = 0, next = null, previous = null, results = emptyList()),
+                    RemoteDataSource.NETWORK,
+                )
+
+            viewModel = DroidHomeViewModel(getHomeUseCase, searchPokemonUseCase)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            coEvery {
+                searchPokemonUseCase.invoke(SearchPokemonUseCase.Params("Pikachu"))
+            } throws
+                mockk<HttpException> {
+                    every { code() } returns 404
+                }
+
+            viewModel.onSearchQueryChanged("Pikachu")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val state = viewModel.homeStateFlow.value as DroidHomeUiState.Error
+            assertEquals(R.string.error_server_title, state.info.titleRes)
+            assertEquals(404, state.info.detailArg)
         }
 
     private fun createMockPokemon(

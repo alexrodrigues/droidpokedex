@@ -16,6 +16,20 @@ class DroidHomeCellPaparazziTest {
         )
 
     @Test
+    fun `DroidHomeCell with no types`() {
+        paparazzi.snapshot {
+            DroidHomeCell(
+                pokemonName = "unown",
+                pokemonNumber = 201,
+                pokemonImageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/201.png",
+                types = emptyList(),
+                backgroundColor = Color(0xFF333D33),
+                pokeballImageRes = R.drawable.pokeball,
+            )
+        }
+    }
+
+    @Test
     fun `DroidHomeCell with grass type pokemon`() {
         paparazzi.snapshot {
             DroidHomeCell(
