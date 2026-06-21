@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -37,7 +38,8 @@ fun DetailsTopBar(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(Colors.pokedexRed),
+                .background(Colors.pokedexRed)
+                .statusBarsPadding(),
     ) {
         hardwareHeader()
         Row(
