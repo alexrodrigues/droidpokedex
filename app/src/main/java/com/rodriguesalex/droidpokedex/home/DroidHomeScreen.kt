@@ -81,7 +81,7 @@ internal fun DroidHomeScreenContent(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .background(Colors.defaultRed)
+                    .background(Colors.pokedexRed)
                     .padding(innerPadding),
         ) {
             DroidPokeHeader(
